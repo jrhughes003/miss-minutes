@@ -20,7 +20,18 @@ import { endOfLocalDay, startOfLocalDay, toLocalDateTime, toLocalTime, type Loca
 
 export type CalendarEvent =
   | { id: string; calendarId: string; title: string; allDay: true; start: LocalDate; end: LocalDate; color?: string }
-  | { id: string; calendarId: string; title: string; allDay: false; start: string; end: string; color?: string }
+  | {
+      id: string
+      calendarId: string
+      title: string
+      allDay: false
+      start: string
+      end: string
+      color?: string
+      transparent?: boolean
+      /** Set on a block "Plan my day" put on the calendar: the task it's for. */
+      planTaskId?: string
+    }
 
 export type TimelineItem =
   | { kind: 'task'; time: LocalTime; task: Task }
@@ -103,6 +114,8 @@ export function buildToday({ tasks, events = [], now, zone, allDayTime }: TodayI
       if (isAllDayEventOn(e, today)) allDayEvents.push(e)
       continue
     }
+    // A plan block for a task that's on the timeline already would show it twice.
+    if (e.planTaskId && tasks.some((t) => t.id === e.planTaskId && t.due?.time)) continue
     const start = new Date(e.start)
     const end = new Date(e.end)
     if (!(start < dayEnd && end > dayStart)) continue // no overlap with today

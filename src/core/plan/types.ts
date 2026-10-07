@@ -46,6 +46,9 @@ export interface PlanDay {
   notBefore: string | null
 }
 
+/** The planning window (D6), until it becomes a setting. */
+export const DEFAULT_PLAN_WINDOW = { start: '07:00', end: '22:00' } as const
+
 export const DEFAULT_ESTIMATE = 30
 export const MIN_BLOCK_MINUTES = 15
 /** A block may run over its estimate by at most this factor (PLAN.md §5.2). */

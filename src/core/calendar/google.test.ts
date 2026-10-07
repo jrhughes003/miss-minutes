@@ -8,6 +8,13 @@ describe('fromGoogleEvent', () => {
     ).toEqual({ id: 'work@x.com|e1', calendarId: 'work@x.com', title: 'Standup', allDay: false, start: '2026-10-07T13:30:00.000Z', end: '2026-10-07T13:45:00.000Z', color: '#123456' })
   })
 
+  it('recognises a block that "Plan my day" wrote, and the task it is for', () => {
+    const e = { id: 'mmplanabc', summary: 'Deep work', start: { dateTime: '2026-10-07T13:00:00Z' }, end: { dateTime: '2026-10-07T14:00:00Z' } }
+    expect(fromGoogleEvent({ ...e, extendedProperties: { private: { mmTask: 't1', mmBatch: 'b1' } } }, 'me')).toMatchObject({ planTaskId: 't1' })
+    // A phone-reminder event carries mmTask too, but it isn't a plan block.
+    expect(fromGoogleEvent({ ...e, extendedProperties: { private: { mmTask: 't1', mmRule: 'r1' } } }, 'me')).not.toHaveProperty('planTaskId')
+  })
+
   it('keeps all-day dates, with the exclusive end date unchanged', () => {
     expect(fromGoogleEvent({ id: 'e2', summary: 'Cottage', start: { date: '2026-10-16' }, end: { date: '2026-10-19' } }, 'fam')).toMatchObject({
       allDay: true,

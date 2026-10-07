@@ -68,7 +68,15 @@ export function fromGoogleEvent(e: GoogleEvent, calendarId: string, color?: stri
   const end = e.end.dateTime ? Date.parse(e.end.dateTime) : Number.NaN
   if (Number.isNaN(start) || Number.isNaN(end) || end < start) return null
   // Store as UTC ISO: the offset in Google's string is not needed once it's an instant.
-  return { ...base, allDay: false, start: new Date(start).toISOString(), end: new Date(end).toISOString() }
+  const planTaskId = e.extendedProperties?.private?.mmBatch ? e.extendedProperties.private.mmTask : undefined
+  return {
+    ...base,
+    allDay: false,
+    start: new Date(start).toISOString(),
+    end: new Date(end).toISOString(),
+    ...(e.transparency === 'transparent' ? { transparent: true } : {}),
+    ...(planTaskId ? { planTaskId } : {}),
+  }
 }
 
 /** Calendars the app may read events from. Free/busy-only calendars expose no event details. */

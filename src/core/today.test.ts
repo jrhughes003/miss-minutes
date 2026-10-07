@@ -74,6 +74,13 @@ describe('buildToday: calendar events', () => {
     expect(m.allDay.events.map((e) => e.title)).toEqual(['Today'])
   })
 
+  it('shows a planned task once, not again as its calendar block', () => {
+    const planned = task({ title: 'Deep work', due: { date: '2026-10-06', time: '13:00' } })
+    const block = (taskId: string, title: string): CalendarEvent => ({ ...(timed('2026-10-06T17:00:00Z', '2026-10-06T18:00:00Z', title) as Extract<CalendarEvent, { allDay: false }>), planTaskId: taskId })
+    const m = buildToday({ tasks: [planned], events: [block(planned.id, 'Deep work'), block('deleted-task', 'Orphan block')], now: NOW, zone: ZONE })
+    expect(m.timeline.map((i) => (i.kind === 'event' ? `event ${i.event.title}` : `${i.kind} ${i.task.title}`)).sort()).toEqual(['event Orphan block', 'task Deep work'])
+  })
+
   it('places timed events in local time and flags ones crossing midnight', () => {
     const m = buildToday({
       tasks: [task({ title: 'Lunch task', due: { date: '2026-10-06', time: '12:00' } })],
