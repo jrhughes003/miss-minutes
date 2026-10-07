@@ -565,3 +565,27 @@ D13 stands as written, with three additions. M8 is no longer blocked.
   A round-trip delay had made clicks look ignored. It was found twice by end-to-end tests and
   fixed once for all.
 
+### D35. Task breakdown as built (design, M7; PROVISIONAL – needs owner review)
+- **Suggestions, never automatic.** "Suggest steps" in the task editor shows a checklist of
+  proposed steps, all ticked by default. Only "Add selected steps" creates subtasks, and
+  "Discard" leaves the task untouched.
+- **No fallback that invents steps.** Without AI (no key, AI off, at the limit, an API error),
+  the app says why and leaves steps to be added by hand, as PLAN §4 specifies. A canned on-device
+  "breakdown" would look like help without being any.
+- **What's sent:** the title, notes (with an "Include notes" switch, on by default), the
+  project name and the due date, per the allow-list. The editor states this next to the button.
+  The task is looked up by id in the main process, so the page can't send arbitrary data.
+- **Shape checks:** steps are filtered through `core/breakdown/checks.ts` before being shown:
+  - 3–7 steps;
+  - each starts with an instruction verb (approximated by excluding articles, pronouns,
+    "-ing" forms and similar);
+  - at most 80 characters;
+  - no numbering;
+  - no duplicates;
+  - no dates the task didn't mention (detected with `chrono-node`).
+- **The eval (PLAN §5.4):** 40 vague tasks, frozen 2026-10-07. The shape checks run on the raw
+  output (target 100 %). The runner also writes a rating sheet for the 20 hand-rated tasks.
+  Not run yet: it needs your key (about $0.04).
+- **Mock and demo:** the mock server and the web demo use the same generic, clearly labelled
+  steps ("Suggested by simulated AI (no real model)").
+
