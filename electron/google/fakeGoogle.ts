@@ -19,6 +19,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
 import type { GoogleCalendarListEntry, GoogleEvent } from '../../src/core/calendar/google'
+import type { GoogleTask, GoogleTaskList } from '../../src/core/sync/googleTasks'
 import type { CalendarEvent } from '../../src/core/today'
 import { FAKE_CALENDARS, generateFakeCalendar } from '../../src/demo/fakeCalendar'
 import type { GoogleEndpoints } from './oauth'
@@ -40,6 +41,20 @@ export interface FakeGoogleOptions {
   pageSize?: number
 }
 
+export interface FakeTasksControl {
+  lists(): GoogleTaskList[]
+  defaultListId: string
+  /** Every task in a list, including deleted ones. */
+  all(listId: string): GoogleTask[]
+  create(listId: string, t: Partial<GoogleTask>, parent?: string): GoogleTask
+  edit(listId: string, id: string, patch: Partial<GoogleTask>): GoogleTask
+  remove(listId: string, id: string): void
+  createList(title: string): GoogleTaskList
+  deleteList(id: string): void
+  /** The next task insert is saved but answered with a 500 (an ambiguous failure). */
+  failNextInsertAfterSaving(): void
+}
+
 export interface FakeGoogle {
   endpoints: GoogleEndpoints
   /** Simulates the browser: follows the sign-in URL as a consenting user and delivers the redirect. */
@@ -51,6 +66,14 @@ export interface FakeGoogle {
   /** Expires every current access token now. */
   expireAccessTokens(): void
   requests: { method: string; path: string }[]
+  /** Calendar write calls the app made (inserts, patches, deletes). */
+  calendarWrites: { method: string; calendarId: string; eventId: string }[]
+  /** Live (not cancelled) events on a calendar, as Google holds them. */
+  calendarEvents(calendarId: string): GoogleEvent[]
+  /** All calendars, including ones the app created. */
+  calendarList(): GoogleCalendarListEntry[]
+  /** Google Tasks as the user's phone sees it: read and change it directly, bypassing the app. */
+  tasks: FakeTasksControl
   close(): Promise<void>
 }
 
@@ -86,6 +109,8 @@ export async function startFakeGoogle(o: FakeGoogleOptions): Promise<FakeGoogle>
   calendars.push({ id: 'busy@example.com', summary: 'Colleague (free/busy)', accessRole: 'freeBusyReader' })
 
   const grants = new Map<string, Grant>()
+  const appCreated = new Set<string>()
+  const writes: { method: string; calendarId: string; eventId: string }[] = []
   const refresh = new Map<string, { scopes: string[]; revoked: boolean }>()
   const access = new Map<string, { scopes: string[]; expiresAt: number }>()
   let rateLimit = 0
@@ -111,18 +136,52 @@ export async function startFakeGoogle(o: FakeGoogleOptions): Promise<FakeGoogle>
     return start + max < items.length ? { items: slice, nextPageToken: String(start + max) } : { items: slice }
   }
 
-  function authorize(req: http.IncomingMessage, res: http.ServerResponse, scope: string): boolean {
+  function authorize(req: http.IncomingMessage, res: http.ServerResponse, scope: string | string[]): boolean {
     const token = /^Bearer (.+)$/.exec(req.headers.authorization ?? '')?.[1]
     const t = token ? access.get(token) : undefined
     if (!t || t.expiresAt < Date.now()) {
       json(res, 401, { error: { code: 401, message: 'Request had invalid authentication credentials.' } })
       return false
     }
-    if (!t.scopes.includes(scope)) {
+    if (!(Array.isArray(scope) ? scope : [scope]).some((s) => t.scopes.includes(s))) {
       json(res, 403, { error: { code: 403, message: 'Request had insufficient authentication scopes.', errors: [{ reason: 'insufficientPermissions' }] } })
       return false
     }
     return true
+  }
+
+  // --- Google Tasks state ---
+  const TASKS_SCOPE = 'https://www.googleapis.com/auth/tasks'
+  const taskLists = new Map<string, { list: GoogleTaskList; tasks: Map<string, GoogleTask> }>()
+  let ambiguousInsert = false
+  let tick = 0
+  // Strictly increasing timestamps, so two changes in the same millisecond still order.
+  const stamp = () => new Date(Date.now() + tick++).toISOString()
+  const newList = (title: string, id = `list-${randomUUID().slice(0, 8)}`) => {
+    const list = { id, title, updated: stamp() }
+    taskLists.set(id, { list, tasks: new Map() })
+    return list
+  }
+  const defaultList = newList('My Tasks', 'default-list')
+  const writeTask = (listId: string, t: Partial<GoogleTask> & { due?: string | null }, existing?: GoogleTask, parent?: string): GoogleTask => {
+    const due = t.due === null ? undefined : t.due !== undefined ? `${t.due.slice(0, 10)}T00:00:00.000Z` : existing?.due // the time is discarded, as in Google
+    const status = t.status ?? existing?.status ?? 'needsAction'
+    const out: GoogleTask = {
+      ...existing,
+      ...t,
+      id: existing?.id ?? `task-${randomUUID().slice(0, 8)}`,
+      title: t.title ?? existing?.title ?? '',
+      status,
+      updated: stamp(),
+      etag: `"${randomUUID().slice(0, 6)}"`,
+    }
+    if (due === undefined) delete out.due
+    else out.due = due
+    if (status === 'completed') out.completed = existing?.completed ?? out.updated
+    else delete out.completed
+    if (parent) out.parent = parent
+    taskLists.get(listId)!.tasks.set(out.id, out)
+    return out
   }
 
   const issueAccess = (scopes: string[]) => {
@@ -194,6 +253,87 @@ export async function startFakeGoogle(o: FakeGoogleOptions): Promise<FakeGoogle>
       return
     }
 
+    // --- Google Tasks API ---
+    if (url.pathname.startsWith('/tasks/v1/')) {
+      if (!authorize(req, res, TASKS_SCOPE)) return
+      const path = decodeURIComponent(url.pathname)
+      if (path === '/tasks/v1/users/@me/lists' && req.method === 'GET') {
+        json(res, 200, { kind: 'tasks#taskLists', ...page([...taskLists.values()].map((l) => l.list), url) })
+        return
+      }
+      if (path === '/tasks/v1/users/@me/lists/@default') {
+        json(res, 200, defaultList)
+        return
+      }
+      if (path === '/tasks/v1/users/@me/lists' && req.method === 'POST') {
+        const body = JSON.parse(await readBody(req)) as { title?: string }
+        json(res, 200, newList(body.title ?? 'Untitled'))
+        return
+      }
+      const m = /^\/tasks\/v1\/lists\/([^/]+)\/tasks(?:\/([^/]+))?(\/move)?$/.exec(path)
+      const entry = m ? taskLists.get(m[1]!) : undefined
+      if (!m || !entry) {
+        json(res, 404, { error: { code: 404, message: 'Not Found' } })
+        return
+      }
+      const [, listId, taskId, move] = m
+      if (!taskId && req.method === 'GET') {
+        const min = url.searchParams.get('updatedMin')
+        const showDeleted = url.searchParams.get('showDeleted') === 'true'
+        const showHidden = url.searchParams.get('showHidden') === 'true'
+        const showCompleted = url.searchParams.get('showCompleted') !== 'false'
+        const items = [...entry.tasks.values()]
+          .filter((t) => (min ? (t.updated ?? '') >= min : true))
+          .filter((t) => showDeleted || !t.deleted)
+          .filter((t) => showHidden || !t.hidden)
+          .filter((t) => showCompleted || t.status !== 'completed')
+          .sort((a, b) => (a.updated ?? '').localeCompare(b.updated ?? ''))
+        json(res, 200, { kind: 'tasks#tasks', ...page(items, url) })
+        return
+      }
+      if (!taskId && req.method === 'POST') {
+        const body = JSON.parse(await readBody(req)) as Partial<GoogleTask>
+        const created = writeTask(listId!, body, undefined, url.searchParams.get('parent') ?? undefined)
+        if (ambiguousInsert) {
+          ambiguousInsert = false
+          json(res, 500, { error: { code: 500, message: 'Backend Error' } })
+          return
+        }
+        json(res, 200, created)
+        return
+      }
+      const existing = taskId ? entry.tasks.get(taskId) : undefined
+      if (!existing || existing.deleted) {
+        json(res, 404, { error: { code: 404, message: 'Task not found' } })
+        return
+      }
+      if (move && req.method === 'POST') {
+        const dest = taskLists.get(url.searchParams.get('destinationTasklist') ?? '')
+        if (!dest) {
+          json(res, 400, { error: { code: 400, message: 'Bad destination' } })
+          return
+        }
+        entry.tasks.delete(existing.id)
+        const moved = { ...existing, updated: stamp() }
+        delete moved.parent
+        dest.tasks.set(moved.id, moved)
+        json(res, 200, moved)
+        return
+      }
+      if (req.method === 'PATCH') {
+        const body = JSON.parse(await readBody(req)) as Partial<GoogleTask> & { due?: string | null }
+        json(res, 200, writeTask(listId!, body, existing))
+        return
+      }
+      if (req.method === 'DELETE') {
+        entry.tasks.set(existing.id, { ...existing, deleted: true, updated: stamp() })
+        res.writeHead(204).end()
+        return
+      }
+      json(res, 405, { error: { code: 405, message: 'Method not allowed' } })
+      return
+    }
+
     // --- Calendar API ---
     if (rateLimit > 0 && url.pathname.startsWith('/calendar/')) {
       rateLimit--
@@ -205,9 +345,81 @@ export async function startFakeGoogle(o: FakeGoogleOptions): Promise<FakeGoogle>
       json(res, 200, { kind: 'calendar#calendarList', ...page(calendars, url) })
       return
     }
+    // --- Calendar writes (M9) ---
+    const S = (x: string) => `https://www.googleapis.com/auth/${x}`
+    if (url.pathname === '/calendar/v3/calendars' && req.method === 'POST') {
+      // Creating a secondary calendar needs calendar.app.created (or full calendar access).
+      if (!authorize(req, res, [S('calendar.app.created'), S('calendar')])) return
+      const body = JSON.parse(await readBody(req)) as { summary?: string; timeZone?: string }
+      const id = `mm-${randomUUID().slice(0, 8)}@group.calendar.google.com`
+      calendars.push({ id, summary: body.summary ?? 'Untitled', accessRole: 'owner', selected: true, backgroundColor: '#d9622b' })
+      events.set(id, [])
+      appCreated.add(id)
+      json(res, 200, { id, summary: body.summary, timeZone: body.timeZone })
+      return
+    }
+    const w = /^\/calendar\/v3\/calendars\/([^/]+)\/events(?:\/([^/]+))?$/.exec(url.pathname)
+    if (w && (req.method !== 'GET' || w[2])) {
+      const calendarId = decodeURIComponent(w[1]!)
+      const list = events.get(calendarId)
+      const cal = calendars.find((c) => c.id === calendarId)
+      if (!list || !cal) {
+        json(res, 404, { error: { code: 404, message: 'Not Found' } })
+        return
+      }
+      // Writing needs events.owned on calendars you own, or app.created on calendars this app made.
+      const writeScopes = appCreated.has(calendarId) ? [S('calendar.app.created'), S('calendar.events.owned'), S('calendar.events'), S('calendar')] : [S('calendar.events.owned'), S('calendar.events'), S('calendar')]
+      const readScopes = [...writeScopes, S('calendar.events.readonly')]
+      if (!authorize(req, res, req.method === 'GET' ? readScopes : writeScopes)) return
+      if (req.method !== 'GET' && cal.accessRole !== 'owner') {
+        json(res, 403, { error: { code: 403, message: 'Forbidden', errors: [{ reason: 'requiredAccessLevel' }] } })
+        return
+      }
+      const eventId = w[2] ? decodeURIComponent(w[2]) : undefined
+      if (!eventId && req.method === 'POST') {
+        const body = JSON.parse(await readBody(req)) as GoogleEvent & Record<string, unknown>
+        const id = body.id ?? `ev${randomUUID().replace(/-/g, '')}`
+        if (!/^[a-v0-9]{5,1024}$/.test(id)) {
+          json(res, 400, { error: { code: 400, message: 'Invalid resource id value.' } })
+          return
+        }
+        if (list.some((e) => e.id === id)) {
+          json(res, 409, { error: { code: 409, message: 'The requested identifier already exists.', errors: [{ reason: 'duplicate' }] } })
+          return
+        }
+        const created = { ...body, id, status: 'confirmed' as const }
+        list.push(created)
+        writes.push({ method: 'POST', calendarId, eventId: id })
+        json(res, 200, created)
+        return
+      }
+      const i = list.findIndex((e) => e.id === eventId && e.status !== 'cancelled')
+      if (i < 0) {
+        json(res, req.method === 'DELETE' ? 410 : 404, { error: { code: req.method === 'DELETE' ? 410 : 404, message: req.method === 'DELETE' ? 'Resource has been deleted' : 'Not Found' } })
+        return
+      }
+      if (req.method === 'GET') {
+        json(res, 200, list[i])
+        return
+      }
+      if (req.method === 'PATCH') {
+        const body = JSON.parse(await readBody(req)) as Partial<GoogleEvent>
+        list[i] = { ...list[i]!, ...body, id: list[i]!.id }
+        writes.push({ method: 'PATCH', calendarId, eventId: list[i]!.id })
+        json(res, 200, list[i])
+        return
+      }
+      if (req.method === 'DELETE') {
+        list[i] = { ...list[i]!, status: 'cancelled' }
+        writes.push({ method: 'DELETE', calendarId, eventId: list[i]!.id })
+        res.writeHead(204).end()
+        return
+      }
+    }
+
     const m = /^\/calendar\/v3\/calendars\/([^/]+)\/events$/.exec(url.pathname)
     if (m) {
-      if (!authorize(req, res, 'https://www.googleapis.com/auth/calendar.events.readonly')) return
+      if (!authorize(req, res, [S('calendar.events.readonly'), S('calendar.events.owned'), S('calendar.events'), S('calendar.app.created')])) return
       const calendarId = decodeURIComponent(m[1]!)
       const list = events.get(calendarId)
       if (!list) {
@@ -245,6 +457,26 @@ export async function startFakeGoogle(o: FakeGoogleOptions): Promise<FakeGoogle>
     revokeAll() {
       for (const r of refresh.values()) r.revoked = true
       access.clear()
+    },
+    calendarWrites: writes,
+    calendarEvents: (id) => (events.get(id) ?? []).filter((e) => e.status !== 'cancelled'),
+    calendarList: () => calendars,
+    tasks: {
+      lists: () => [...taskLists.values()].map((l) => l.list),
+      defaultListId: defaultList.id,
+      all: (listId) => [...(taskLists.get(listId)?.tasks.values() ?? [])],
+      create: (listId, t, parent) => writeTask(listId, t, undefined, parent),
+      edit: (listId, id, patch) => writeTask(listId, patch, taskLists.get(listId)!.tasks.get(id)),
+      remove: (listId, id) => {
+        const e = taskLists.get(listId)!
+        const t = e.tasks.get(id)!
+        e.tasks.set(id, { ...t, deleted: true, updated: stamp() })
+      },
+      createList: (title) => newList(title),
+      deleteList: (id) => void taskLists.delete(id),
+      failNextInsertAfterSaving: () => {
+        ambiguousInsert = true
+      },
     },
     rateLimitNext(n) {
       rateLimit = n

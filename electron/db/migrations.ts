@@ -147,6 +147,71 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX ai_usage_by_time ON ai_usage (at);
     `,
   },
+  {
+    version: 5,
+    description: 'Google Tasks sync state',
+    sql: `
+      -- Which Google task list each project syncs to ('inbox' = the default list).
+      -- hwm (high-water mark) is the newest 'updated' time Google has reported for
+      -- the list. The next sync asks for changes since then, using Google's clock
+      -- rather than ours, so a skewed PC clock can't make us miss changes.
+      CREATE TABLE gtasks_lists (
+        project_key  TEXT PRIMARY KEY,
+        list_id      TEXT NOT NULL UNIQUE,
+        hwm          TEXT
+      );
+
+      -- One row per synced task. The snapshot holds the shared fields as both
+      -- sides last agreed: the "base" of the three-way merge (D13). No foreign
+      -- key to tasks on purpose: a row whose local task is gone is how a local
+      -- delete is detected.
+      CREATE TABLE gtasks_map (
+        local_id   TEXT PRIMARY KEY,
+        google_id  TEXT NOT NULL UNIQUE,
+        list_id    TEXT NOT NULL,
+        snapshot   TEXT NOT NULL
+      );
+
+      -- Inserts in flight. Written before asking Google to create a task; removed
+      -- once the new id is mapped. A row left over after a crash or an ambiguous
+      -- error is resolved on the next sync by adopting the matching Google task
+      -- instead of inserting a duplicate (D13).
+      CREATE TABLE gtasks_outbox (
+        local_id          TEXT PRIMARY KEY,
+        list_id           TEXT NOT NULL,
+        title             TEXT NOT NULL,
+        parent_google_id  TEXT,
+        created_at        TEXT NOT NULL
+      );
+
+      -- What sync did that the user may want to know about: conflicts, deletions,
+      -- re-created tasks. Shown in Settings.
+      CREATE TABLE gtasks_log (
+        id      INTEGER PRIMARY KEY,
+        at      TEXT NOT NULL,
+        kind    TEXT NOT NULL,
+        title   TEXT NOT NULL,
+        detail  TEXT NOT NULL
+      );
+    `,
+  },
+  {
+    version: 6,
+    description: 'phone reminder events',
+    sql: `
+      -- Events this app put on the "Miss Minutes" Google calendar to carry
+      -- 📱 reminders to the phone (D8). The id is derived from the reminder
+      -- rule and occurrence, so creating it twice is impossible (D12). The
+      -- content hash says whether the event needs updating.
+      CREATE TABLE phone_events (
+        event_id      TEXT PRIMARY KEY,
+        rule_id       TEXT NOT NULL,
+        occurrence    TEXT NOT NULL,
+        task_id       TEXT NOT NULL,
+        content_hash  TEXT NOT NULL
+      );
+    `,
+  },
 ]
 
 export function currentVersion(db: SqlDatabase): number {
