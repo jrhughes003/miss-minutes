@@ -356,7 +356,7 @@ time windows, computed locally. The field-by-field table is in PLAN §4.
 
 ## Made during the autonomous session (2026-10-06)
 
-### D26. SQLite through Node's built-in `node:sqlite`; time zones through `Intl` (design; PROVISIONAL – needs owner review)
+### D26. SQLite through Node's built-in `node:sqlite`; time zones through `Intl` (design; accepted by owner 2026-10-06)
 - **Options:**
   - (a) `better-sqlite3`, as in financeflow and D7;
   - (b) `node:sqlite`, built into Node 24 and Electron 44.
@@ -376,7 +376,7 @@ time windows, computed locally. The field-by-field table is in PLAN §4.
   Toronto, London, Lord Howe and others. `date-fns` and `@date-fns/tz` turned out to be unused
   and were removed at M3. Formatting uses `Intl.DateTimeFormat`.
 
-### D27. Finishing an overdue repeating task skips ahead to today (design; PROVISIONAL – needs owner review)
+### D27. Finishing an overdue repeating task skips ahead to today (design; accepted by owner 2026-10-06)
 - **Rule:** the next occurrence is the first one after the current due date. If that is still
   in the past, the next is the first occurrence on or after today, keeping the rule's cadence:
   "every 2 weeks on Tuesday" stays on the same alternating Tuesdays.
@@ -385,7 +385,7 @@ time windows, computed locally. The field-by-field table is in PLAN §4.
 - **Alternative:** strict schedule, where the next is always the one after the current due
   date, even if it's in the past.
 
-### D28. Task rules (design; PROVISIONAL – needs owner review)
+### D28. Task rules (design; accepted by owner 2026-10-06)
 - **Subtasks:**
   - one level deep, always in the parent's project;
   - a subtask can't repeat (its parent can).
@@ -405,7 +405,7 @@ time windows, computed locally. The field-by-field table is in PLAN §4.
   Tags are lower-case with no `#`, at most 20 per task.
 
 
-### D30. How reminders are modelled and fired (design; PROVISIONAL – needs owner review)
+### D30. How reminders are modelled and fired (design; accepted by owner 2026-10-06)
 These refine D14 and were made while building M2.
 - **Reminders live on their task** as a list of rules: "N minutes before due" or "at a fixed
   date and time".
@@ -438,9 +438,33 @@ These refine D14 and were made while building M2.
 - **Plan:** publish it to **In production** (unverified) once the GitHub Pages site from M4 is
   live, so the consent screen can link to a real homepage and privacy policy.
 - **Consequences:**
-  - M4 gains a small static **privacy page** on the demo site (PROVISIONAL – needs owner
-    review). It covers what the desktop app stores locally, what it sends to Google and
+  - M4 gains a small static **privacy page** on the demo site (accepted by owner
+    2026-10-06). It covers what the desktop app stores locally, what it sends to Google and
     Anthropic, and how to disconnect.
   - Any M5 work done before publishing hits the 7-day refresh-token expiry. The app must treat
     an `invalid_grant` on refresh as "please reconnect", not as a crash. Building that handling
     is needed anyway, because users can revoke access at any time.
+
+### D31. Google Tasks sync rules confirmed and completed (user, 2026-10-06; finalizes D13)
+D13 stands as written, with three additions. M8 is no longer blocked.
+- **Same-field conflicts: Miss Minutes wins** (option a, as in D13).
+  - If both sides changed the same field since the last sync, the local value is kept and
+    written back to Google.
+  - The overwritten Google value is recorded in the sync log, so nothing is lost silently.
+  - Rejected: "most recent edit wins". The timestamps come from different devices' clocks, so
+    close calls would be decided by clock drift.
+- **Deletions:**
+  - Deleted on one side and **unchanged** on the other (compared with the last-sync snapshot):
+    delete on both sides.
+  - Deleted on one side and **edited** on the other: keep the edited task, and recreate it on
+    the side that deleted it. Losing an edit is worse than a task reappearing. Each such case
+    is recorded in the sync log.
+  - Completing a task is not deleting it. A completed task syncs as completed. Google's
+    "cleared" (hidden) completed tasks stay completed locally and are not deleted.
+- **Inbox ↔ the default Google list:** tasks with no project sync to the user's default list
+  ("My Tasks"). Each project maps to its own Google task list, created on first sync if
+  missing.
+- **Tests M8 must include:** a property test over random sequences of edits, deletes and
+  completions on both sides. After two sync rounds with no further edits, both sides must
+  agree, no task may be duplicated, and every lost local or remote value must appear in the
+  sync log.

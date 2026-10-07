@@ -400,4 +400,4 @@ a specification, and a walkthrough in the session report.
 - The demo is hosted on GitHub Pages.
 - A local desktop install arrives early, at M3 (D24).
 
-**Still open:** confirmation of the D13 merge rules for Google Tasks, needed before M8.
+**Resolved on 2026-10-06 (D31):** the Google Tasks merge rules, including deletions and the Inbox ↔ "My Tasks" mapping.
