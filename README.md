@@ -61,4 +61,25 @@ access to your calendar.
 Disconnecting (in Settings) revokes access at Google and deletes the calendar data Miss Minutes
 had stored.
 
+### Google Tasks (optional, two-way)
+
+1. In Google Cloud Console, also enable the **Google Tasks API**, and on the consent screen's
+   **Data access** page add the scope `.../auth/tasks`.
+2. In Miss Minutes, go to **Settings → Google Calendar** and turn on **Sync my tasks with Google
+   Tasks**, then click **Allow Google Tasks access**. Google asks once for the extra permission.
+
+Titles, notes, due dates and done/not done sync both ways. Priorities, tags, times of day,
+reminders and repeat rules stay in Miss Minutes, because Google Tasks has no place for them. If
+both sides change the same field, Miss Minutes' version wins and the other is shown in the sync
+log.
+
+### Phone reminders (optional)
+
+1. On the consent screen's **Data access** page, add the scope `.../auth/calendar.app.created`.
+   It lets Miss Minutes create and manage **its own** calendar only.
+2. In **Settings → Google Calendar**, turn on **Send reminders I mark 📱 to my phone**, then
+   click **Allow phone reminders**.
+3. In a task's reminders, tick **📱**. The reminder then also appears on a "Miss Minutes
+   reminders" calendar with an alert, so Google Calendar on your phone notifies you.
+
 The full README, including how the project was built, arrives at milestone M11.
