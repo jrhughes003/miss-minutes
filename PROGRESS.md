@@ -31,10 +31,12 @@ Check status at the end of the session (all run on your machine):
   also not checked on its own; only the final tree was.
 
 ### Ready to install
-- **File:** `release\Miss Minutes Setup 0.1.0.exe` (111 MB), SHA-256
-  `83b15bfdd4ed7d08381f70e20610ea82eeb65beaae94e27bda853223c595701e`.
+- **File:** `release\Miss Minutes Setup 0.1.0.exe` (112 MB), rebuilt on 2026-10-07 at 12:06
+  with Plan my day, the new look and the new clock icon. SHA-256
+  `9cedd8fc67a2cd64e6f5e85d071449b553ef3a9b100b92a390cdf2cd8f248f65`.
+- **Upgrading later:** run a newer installer over the old one. Your data stays.
 - **Install:** per user (no admin). It creates a desktop shortcut and a Start-menu entry.
-- **Data:** `%APPDATA%\Miss Minutes\missminutes.db`, outside the install folder.
+- **Data:** `%APPDATA%\miss-minutes\missminutes.db`, outside the install folder. **Installed 2026-10-07** (at your request) to `%LOCALAPPDATA%\Programs\Miss Minutes`.
 - **The installer is unsigned,** so Windows SmartScreen will warn: choose "More info" → "Run
   anyway".
 - **Start at login:** on first launch the app registers itself to start hidden at sign-in. This
@@ -314,7 +316,7 @@ together.
 23. **Add the Plan page and the retro-futurist console look**
     ```powershell
     cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- src/ui src/App.tsx src/main.tsx src/styles.css src/storage/api.ts src/shared/ipc.ts src/shared/google.ts electron/main.ts electron/ipc.test.ts electron/db/migrations.ts electron/db/batchStore.ts electron/google/oauth.ts electron/google/service.ts e2e-demo/demo.spec.ts e2e-electron/plan.spec.ts e2e-electron/app.spec.ts package.json package-lock.json
+    git add -- src/ui src/App.tsx src/main.tsx src/styles.css src/storage/api.ts src/shared/ipc.ts src/shared/google.ts electron/main.ts electron/ipc.test.ts electron/db/migrations.ts electron/db/batchStore.ts electron/google/oauth.ts electron/google/service.ts e2e-demo/demo.spec.ts e2e-electron/plan.spec.ts e2e-electron/app.spec.ts package.json package-lock.json build scripts/make-icons.mjs public/favicon.svg
     ```
     ```
     Add the Plan page and the retro-futurist console look
@@ -331,7 +333,9 @@ together.
     Look: the app now sits on an amber CRT screen inside a console, with
     keycap buttons, indicator lamps, an analog clock, rubber-stamp labels
     and a glowing timeline, in the spirit of retro-futurist office tech
-    (original art only). A light "office" theme is one switch away. Both
+    (original art only). A light "office" theme is one switch away. The
+    app icon is a matching 1970s console desk clock, drawn as SVG and
+    rendered to the installer, window and tray icons. Both
     themes pass axe on every page; effects never lower text contrast and
     stop for reduced motion. The fonts (VT323, IBM Plex Mono; OFL) are
     bundled, so the desktop app stays offline-capable.

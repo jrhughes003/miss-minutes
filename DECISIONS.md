@@ -819,6 +819,12 @@ in *Loki*, "a very old digital feel". This builds D33.
   - `forced-colors` gets plain system colours;
   - stamp and dispatch labels are decorative CSS with empty alt text, so screen readers hear
     the real headings unchanged.
+- **The app icon:**
+  - a 1970s console desk clock: a brown moulded housing, an amber-glow bezel, a cream dial at
+    10:10 and the three-colour stripe;
+  - the tray uses just the dial, so it reads at 16 px;
+  - the sources are `build/icon.svg` and `build/tray.svg`, and `node scripts/make-icons.mjs`
+    renders the PNGs and the web favicon with Playwright's Chromium.
 - **Not changed:** layout, wording, and every accessible name and test hook. It's a skin over
   the same app.
 - **Still open (from D33):** "Miss Minutes" is a Marvel character's name. Decide the public
