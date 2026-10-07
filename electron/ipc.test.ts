@@ -36,6 +36,7 @@ function setup() {
     'ai:setKey': () => UNAVAILABLE_AI,
     'ai:clearKey': () => UNAVAILABLE_AI,
     'ai:setPrefs': () => UNAVAILABLE_AI,
+    'breakdown:suggest': () => ({ steps: [], source: 'none', note: null }),
     'capture:parse': () => ({ result: { kind: 'task', title: 'x', due: null, priority: 4, projectName: null, tags: [], recurrence: null, reminderMinutesBefore: null, question: null }, source: 'device', note: null }),
   }
   registerIpcHandlers(ipc, handlers)

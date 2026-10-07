@@ -12,6 +12,7 @@
 
 import http from 'node:http'
 import type { AddressInfo } from 'node:net'
+import { mockBreakdown } from '../../src/core/breakdown/mock'
 import { parseBaseline } from '../../src/core/capture/baseline'
 
 export interface MockAi {
@@ -45,6 +46,23 @@ export async function startMockAi(port = 0): Promise<MockAi> {
       const userJson = JSON.parse(request.messages[0]?.content ?? '{}') as Record<string, unknown>
       requests.push({ model: request.model, system: request.system ?? '', userJson })
 
+      const reply = (output: unknown) => {
+        const text = JSON.stringify(output)
+        send(200, {
+          id: `msg_mock_${requests.length}`,
+          type: 'message',
+          role: 'assistant',
+          model: `${request.model} (mock)`,
+          content: [{ type: 'text', text }],
+          stop_reason: 'end_turn',
+          stop_sequence: null,
+          // Plausible token counts, so usage logging and cost display have something to show.
+          usage: { input_tokens: 600 + Math.ceil(body.length / 4), output_tokens: Math.ceil(text.length / 4), cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
+        })
+      }
+      // Breakdown requests carry a task title; capture requests carry typed text.
+      if (typeof userJson.title === 'string' && userJson.text === undefined) return reply({ steps: mockBreakdown(userJson.title) })
+
       const r = parseBaseline(String(userJson.text ?? ''), {
         nowLocal: String(userJson.nowLocal ?? ''),
         zone: String(userJson.zone ?? 'UTC'),
@@ -63,18 +81,7 @@ export async function startMockAi(port = 0): Promise<MockAi> {
         reminder_minutes_before: r.reminderMinutesBefore,
         question: r.question,
       }
-      const text = JSON.stringify(output)
-      send(200, {
-        id: `msg_mock_${requests.length}`,
-        type: 'message',
-        role: 'assistant',
-        model: `${request.model} (mock)`,
-        content: [{ type: 'text', text }],
-        stop_reason: 'end_turn',
-        stop_sequence: null,
-        // Plausible token counts, so usage logging and cost display have something to show.
-        usage: { input_tokens: 600 + Math.ceil(body.length / 4), output_tokens: Math.ceil(text.length / 4), cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
-      })
+      reply(output)
     })
   })
 

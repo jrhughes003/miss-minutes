@@ -14,7 +14,7 @@ import type { ActiveReminder, ReminderAction } from '../core/reminders/types'
 import type { Settings } from '../core/settings'
 import type { NewTask, Project, Task, TaskPatch, TaskQuery } from '../core/tasks/types'
 import type { CalendarEvent } from '../core/today'
-import type { AiPrefs, AiStatus, CaptureResponse } from './ai'
+import type { AiPrefs, AiStatus, BreakdownResponse, CaptureResponse } from './ai'
 import type { GoogleStatus } from './google'
 
 export interface AppInfo {
@@ -69,6 +69,8 @@ export interface IpcContract {
   'ai:setPrefs': { args: [prefs: AiPrefs]; result: AiStatus }
   /** Natural-language capture: Claude if enabled, else the on-device parser. Nothing is saved. */
   'capture:parse': { args: [text: string]; result: CaptureResponse }
+  /** Suggested steps for a task (by id, so the page can't send arbitrary data). Nothing is saved. */
+  'breakdown:suggest': { args: [taskId: string, options: { includeNotes: boolean }]; result: BreakdownResponse }
 }
 
 export type Channel = keyof IpcContract
@@ -108,6 +110,7 @@ const CHANNEL_SET: Record<Channel, true> = {
   'ai:clearKey': true,
   'ai:setPrefs': true,
   'capture:parse': true,
+  'breakdown:suggest': true,
 }
 
 export const CHANNELS = Object.freeze(Object.keys(CHANNEL_SET) as Channel[])

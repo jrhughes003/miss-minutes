@@ -71,3 +71,15 @@ test('the demo understands typed sentences with clearly labelled simulated AI', 
   await expect(page.getByText(/no real model is called here/)).toBeVisible()
   await expectAccessible(page)
 })
+
+test('the demo suggests steps for a task, labelled as simulated', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Tasks', exact: true }).click()
+  await page.getByRole('button', { name: 'Look into a standing desk' }).click()
+  const editor = page.getByRole('region', { name: 'Edit task' })
+  await editor.getByRole('button', { name: 'Suggest steps' }).click()
+  await expect(editor.getByText('Suggested by simulated AI (no real model)')).toBeVisible()
+  await expectAccessible(page)
+  await editor.getByRole('button', { name: 'Add selected steps' }).click()
+  await expect(page.getByText('0/4 steps')).toBeVisible()
+})

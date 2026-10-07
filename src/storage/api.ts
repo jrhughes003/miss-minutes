@@ -16,7 +16,8 @@ import type { CalendarEvent } from '../core/today'
 import { toLocalDate } from '../core/time'
 import { parseBaseline } from '../core/capture/baseline'
 import { toLocalDateTime } from '../core/time'
-import { UNAVAILABLE_AI, type AiPrefs, type AiStatus, type CaptureResponse } from '../shared/ai'
+import { mockBreakdown } from '../core/breakdown/mock'
+import { UNAVAILABLE_AI, type AiPrefs, type AiStatus, type BreakdownResponse, type CaptureResponse } from '../shared/ai'
 import { UNAVAILABLE_GOOGLE, type GoogleStatus } from '../shared/google'
 import { decodeIpcError, type MissMinutesApi, type PushEvents } from '../shared/ipc'
 import { fakeEventsBetween } from '../demo/fakeCalendar'
@@ -75,6 +76,10 @@ export interface DataApi {
   capture: {
     /** Understands a typed sentence. Saves nothing: the UI shows a preview first. */
     parse(text: string): Promise<CaptureResponse>
+  }
+  breakdown: {
+    /** Suggested steps for a task. Saves nothing: the UI lets the user pick. */
+    suggest(taskId: string, options: { includeNotes: boolean }): Promise<BreakdownResponse>
   }
   /** True in the hosted web demo: sample data and a generated calendar. */
   isDemo: boolean
@@ -147,6 +152,7 @@ export function createIpcApi(b: MissMinutesApi): DataApi {
       setPrefs: (prefs) => call(b.invoke('ai:setPrefs', prefs)),
     },
     capture: { parse: (text) => call(b.invoke('capture:parse', text)) },
+    breakdown: { suggest: (taskId, options) => call(b.invoke('breakdown:suggest', taskId, options)) },
     google: {
       status: () => call(b.invoke('google:status')),
       importClient: (json) => call(b.invoke('google:importClient', json)),
@@ -282,6 +288,17 @@ export function createLocalApi(storage: KeyValueStorage, options: LocalApiOption
           recordDemoUsage(storage, text)
           emit('ai')
           return { result, source: 'mock', note: null }
+        }),
+    },
+    breakdown: {
+      suggest: (taskId) =>
+        read((): BreakdownResponse => {
+          if (!options.demo) return { steps: [], source: 'none', note: 'Suggested steps need AI, available in the desktop app with your own API key.' }
+          const task = service.getTask(taskId)
+          if (!task) throw new AppError('That task no longer exists.')
+          recordDemoUsage(storage, task.title)
+          emit('ai')
+          return { steps: mockBreakdown(task.title), source: 'mock', note: null }
         }),
     },
     google: {

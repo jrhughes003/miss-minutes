@@ -11,9 +11,10 @@ import { parseBaseline } from '../../src/core/capture/baseline'
 import type { CaptureContext } from '../../src/core/capture/types'
 import type { Clock } from '../../src/core/clock'
 import type { SettingsStore } from '../../src/core/settings'
-import type { AiPrefs, AiStatus, AiUsageSummary, CaptureResponse } from '../../src/shared/ai'
+import type { AiPrefs, AiStatus, AiUsageSummary, BreakdownResponse, CaptureResponse } from '../../src/shared/ai'
 import type { SqlDatabase } from '../db/database'
 import type { SecretStore } from '../google/secrets'
+import { breakdownWithClaude, type BreakdownInput } from './breakdown'
 import { captureWithClaude, CaptureRefusedError, type CaptureUsage } from './capture'
 import { MODELS, PRICES_AS_OF } from './models'
 
@@ -127,6 +128,30 @@ export class AiService {
       else if (e instanceof CaptureRefusedError) note = 'Claude declined this one; understood on this device instead.'
       this.log('capture', { model: MODELS.capture, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0, latencyMs: 0 }, false)
       return device(note)
+    }
+  }
+
+  // ---- Breakdown ---------------------------------------------------------------
+
+  /** Suggested steps for a task. With AI unavailable there are no suggestions (steps can always be added by hand). */
+  async breakdown(input: BreakdownInput): Promise<BreakdownResponse> {
+    const none = (note: string): BreakdownResponse => ({ steps: [], source: 'none', note })
+    const status = this.status()
+    if (!status.keySet) return none('Add your Anthropic API key in Settings → AI to get suggested steps.')
+    if (!status.enabled) return none('AI is switched off in Settings → AI.')
+    if (status.blocked) return none('Your monthly AI limit is reached.')
+
+    const client = new Anthropic({ apiKey: this.o.secrets.get(KEY)!, timeout: 30_000, maxRetries: 2, ...(this.o.baseURL ? { baseURL: this.o.baseURL } : {}) })
+    try {
+      const { steps, usage } = await breakdownWithClaude(client, input)
+      this.log('breakdown', usage, true)
+      if (steps.length === 0) return none('No usable steps came back. Try adding a few words to the task.')
+      return { steps, source: this.o.baseURL ? 'mock' : 'claude', note: null }
+    } catch (e) {
+      this.log('breakdown', { model: MODELS.breakdown, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0, latencyMs: 0 }, false)
+      if (e instanceof Anthropic.AuthenticationError) return none('The API key was rejected. Check it in Settings → AI.')
+      if (e instanceof Anthropic.RateLimitError) return none('Claude is rate-limited right now. Try again in a minute.')
+      return none('Claude was unavailable. Try again later.')
     }
   }
 

@@ -254,3 +254,8 @@ fieldset.field { border: 0; padding: 0; margin: 0 0 10px; }
 .usage-table th, .usage-table td { text-align: left; padding: 4px 14px 4px 0; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
 .usage-table .total th, .usage-table .total td { font-weight: 600; }
 .caps input { width: 7em; }
+
+/* Suggested steps */
+.suggest-steps { margin: 8px 0; }
+.suggestions { border: 1px dashed var(--accent); border-radius: var(--radius); padding: 8px 10px; margin: 6px 0; display: grid; gap: 4px; }
+.suggestions legend { font-weight: 600; font-size: 0.9rem; padding: 0 4px; }

@@ -46,6 +46,13 @@ export interface CaptureResponse {
   note: string | null
 }
 
+export interface BreakdownResponse {
+  steps: string[]
+  source: 'claude' | 'mock' | 'none'
+  /** Why there are no suggestions, if there aren't (no key, AI off, error). */
+  note: string | null
+}
+
 export const UNAVAILABLE_AI: AiStatus = {
   available: false,
   keySet: false,

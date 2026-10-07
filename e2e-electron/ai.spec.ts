@@ -39,14 +39,26 @@ test('save a key, capture with AI, see usage, switch AI off', async () => {
     expect(mock.requests).toHaveLength(1)
     expect(Object.keys(mock.requests[0]!.userJson).sort()).toEqual(['nowLocal', 'projectNames', 'tagNames', 'text', 'weekday', 'zone'])
 
+    // Task breakdown: suggestions to pick from, nothing added until confirmed.
+    await page.getByRole('button', { name: 'Tasks', exact: true }).click() // due tomorrow, so not on Today
+    await page.getByRole('button', { name: 'Call the plumber' }).click()
+    const editor = page.getByRole('region', { name: 'Edit task' })
+    await editor.getByRole('button', { name: 'Suggest steps' }).click()
+    const picks = editor.getByRole('group', { name: 'Pick the steps to add' })
+    await expect(picks.getByRole('checkbox')).toHaveCount(4)
+    await picks.getByRole('button', { name: 'Add selected steps' }).click()
+    await expect(editor.locator('.step-list li')).toHaveCount(4)
+    expect(Object.keys(mock.requests[1]!.userJson).sort()).toEqual(['due', 'projectName', 'title'])
+
     await page.getByRole('button', { name: 'Settings', exact: true }).click()
     await expect(ai.getByRole('row', { name: /capture 1/ })).toBeVisible()
+    await expect(ai.getByRole('row', { name: /breakdown 1/ })).toBeVisible()
     await ai.getByRole('checkbox', { name: /Use Claude/ }).uncheck()
     await page.getByRole('button', { name: 'Today', exact: true }).click()
     await page.getByLabel('New task for today').fill('Water plants tomorrow')
     await page.getByLabel('New task for today').press('Enter')
     await expect(page.getByRole('region', { name: 'Add this task?' }).getByText('Understood on this device')).toBeVisible()
-    expect(mock.requests).toHaveLength(1) // AI off: nothing sent
+    expect(mock.requests).toHaveLength(2) // AI off: nothing more sent
   } finally {
     await app.close()
     await mock.close()

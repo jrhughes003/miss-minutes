@@ -11,6 +11,7 @@ import { useApi, useLive } from '../data'
 import { PRIORITY_LABELS } from '../format'
 import { ReminderField } from './ReminderField'
 import { RepeatField } from './RepeatField'
+import { SuggestSteps } from './SuggestSteps'
 
 interface Draft {
   title: string
@@ -222,6 +223,7 @@ export function TaskEditor({ taskId, projects, onClose }: { taskId: string; proj
               ))}
             </ul>
           )}
+          <SuggestSteps task={task} />
           <form onSubmit={addStep} className="inline-form">
             <label htmlFor={`${id}-step`} className="visually-hidden">New step</label>
             <input id={`${id}-step`} value={newStep} onChange={(e) => setNewStep(e.target.value)} placeholder="Add a step" />

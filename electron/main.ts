@@ -191,6 +191,19 @@ function start(): void {
     'ai:setKey': (key) => aiChanged(ai.setKey(key)),
     'ai:clearKey': () => aiChanged(ai.clearKey()),
     'ai:setPrefs': (prefs) => aiChanged(ai.setPrefs(prefs)),
+    'breakdown:suggest': async (taskId, options) => {
+      const task = tasks.getTask(taskId)
+      if (!task) throw new Error('That task no longer exists.')
+      const project = task.projectId ? tasks.listProjects().find((p) => p.id === task.projectId)?.name ?? null : null
+      const response = await ai.breakdown({
+        title: task.title,
+        ...(options.includeNotes && task.notes ? { notes: task.notes } : {}),
+        projectName: project,
+        due: task.due ? `${task.due.date}${task.due.time ? ` ${task.due.time}` : ''}` : null,
+      })
+      push('data:changed', { scope: 'ai' })
+      return response
+    },
     'capture:parse': async (text) => {
       const now = systemClock.now()
       const response = await ai.capture(text, {
