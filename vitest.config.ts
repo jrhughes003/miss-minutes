@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   test: {
-    include: ['src/**/*.test.{ts,tsx}', 'electron/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'electron/**/*.test.ts', 'eval/**/*.test.ts'],
     environment: 'node',
     setupFiles: ['./src/test/setup.ts'],
     restoreMocks: true,

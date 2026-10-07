@@ -1,0 +1,4489 @@
+{
+ "system": "baseline",
+ "model": "chrono-node baseline",
+ "split": "dev",
+ "metrics": {
+  "cases": 124,
+  "unambiguous": 110,
+  "ambiguous": 14,
+  "fullyCorrect": 0.7272727272727273,
+  "confidentlyWrong": 0.18181818181818182,
+  "clarificationRecall": 0,
+  "falseClarification": 0,
+  "fieldAccuracy": {
+   "kind": 1,
+   "title": 0.8636363636363636,
+   "due": 0.8181818181818182,
+   "priority": 1,
+   "project": 0.9636363636363636,
+   "tags": 1,
+   "recurrence": 0.9727272727272728,
+   "reminder": 0.9545454545454546
+  },
+  "byCategory": {
+   "relative-day": {
+    "cases": 15,
+    "correct": 15
+   },
+   "weekday": {
+    "cases": 20,
+    "correct": 19
+   },
+   "time-of-day": {
+    "cases": 25,
+    "correct": 11
+   },
+   "recurrence": {
+    "cases": 16,
+    "correct": 12
+   },
+   "metadata": {
+    "cases": 16,
+    "correct": 12
+   },
+   "reminder": {
+    "cases": 10,
+    "correct": 5
+   },
+   "ambiguous": {
+    "cases": 14,
+    "correct": 0
+   },
+   "near-midnight": {
+    "cases": 4,
+    "correct": 2
+   },
+   "dst": {
+    "cases": 3,
+    "correct": 3
+   },
+   "no-date": {
+    "cases": 1,
+    "correct": 1
+   }
+  }
+ },
+ "outputs": [
+  {
+   "id": "tue-relative-day-0",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-10-07",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 40.33789999999999
+  },
+  {
+   "id": "tue-relative-day-2",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-10-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 36.80729999999994
+  },
+  {
+   "id": "tue-relative-day-4",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-10-08",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.8181999999999334
+  },
+  {
+   "id": "tue-weekday-5",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-10-12",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.4701999999999771
+  },
+  {
+   "id": "tue-weekday-7",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-10-12",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.18389999999999418
+  },
+  {
+   "id": "tue-weekday-9",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-10-08",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.16190000000005966
+  },
+  {
+   "id": "tue-weekday-10",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-10-15",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.15239999999994325
+  },
+  {
+   "id": "tue-weekday-12",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-10-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.14990000000000236
+  },
+  {
+   "id": "tue-time-of-day-14",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-10-07",
+     "time": "15:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.8772999999999911
+  },
+  {
+   "id": "tue-time-of-day-16",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-10-07",
+     "time": "12:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.3876000000000204
+  },
+  {
+   "id": "tue-time-of-day-18",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-10-07",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.2357000000000653
+  },
+  {
+   "id": "tue-time-of-day-21",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-10-07",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1774000000000342
+  },
+  {
+   "id": "tue-recurrence-23",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-10-06",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=DAILY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08360000000004675
+  },
+  {
+   "id": "tue-recurrence-25",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-10-08",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TH",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.14380000000005566
+  },
+  {
+   "id": "tue-metadata-28",
+   "result": {
+    "kind": "task",
+    "title": ": Book flights to Halifax",
+    "due": null,
+    "priority": 1,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11469999999997071
+  },
+  {
+   "id": "tue-metadata-31",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet for work",
+    "due": {
+     "date": "2026-10-07",
+     "time": null
+    },
+    "priority": 2,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.14229999999997744
+  },
+  {
+   "id": "tue-reminder-32",
+   "result": {
+    "kind": "task",
+    "title": "call the dentist",
+    "due": {
+     "date": "2026-10-07",
+     "time": "16:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": 0,
+    "question": null
+   },
+   "ms": 0.7769000000000688
+  },
+  {
+   "id": "tue-reminder-34",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget remind me an hour before",
+    "due": {
+     "date": "2026-10-07",
+     "time": "10:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.640700000000038
+  },
+  {
+   "id": "tue-ambiguous-36",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax on February 30",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.5032999999999674
+  },
+  {
+   "id": "fri-relative-day-38",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-10-10",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11950000000001637
+  },
+  {
+   "id": "fri-relative-day-41",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-10-23",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12760000000002947
+  },
+  {
+   "id": "fri-ambiguous-44",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-10-12",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10770000000002256
+  },
+  {
+   "id": "fri-weekday-46",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-10-15",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11399999999991905
+  },
+  {
+   "id": "fri-weekday-48",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-10-15",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13479999999992742
+  },
+  {
+   "id": "fri-weekday-51",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-10-16",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12400000000002365
+  },
+  {
+   "id": "fri-time-of-day-53",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-10-10",
+     "time": "09:30"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1735999999999649
+  },
+  {
+   "id": "fri-time-of-day-55",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet after lunch",
+    "due": {
+     "date": "2026-10-10",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11869999999998981
+  },
+  {
+   "id": "fri-time-of-day-57",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-10-10",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.21249999999997726
+  },
+  {
+   "id": "fri-time-of-day-59",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-10-10",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.16050000000007003
+  },
+  {
+   "id": "fri-near-midnight-61",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-10-09",
+     "time": "12:30"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.2799999999999727
+  },
+  {
+   "id": "fri-ambiguous-62",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-10-11",
+     "time": "00:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.2097999999999729
+  },
+  {
+   "id": "fri-recurrence-64",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-10-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=DAILY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.0705000000000382
+  },
+  {
+   "id": "fri-recurrence-66",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-10-15",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TH",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1030999999999267
+  },
+  {
+   "id": "fri-metadata-69",
+   "result": {
+    "kind": "task",
+    "title": ": Renew my passport",
+    "due": null,
+    "priority": 1,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11369999999999436
+  },
+  {
+   "id": "fri-metadata-70",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [
+     "home",
+     "errands"
+    ],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08379999999999654
+  },
+  {
+   "id": "fri-metadata-72",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist for work",
+    "due": {
+     "date": "2026-10-10",
+     "time": null
+    },
+    "priority": 2,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09640000000001692
+  },
+  {
+   "id": "fri-reminder-73",
+   "result": {
+    "kind": "task",
+    "title": "pay the electricity bill",
+    "due": {
+     "date": "2026-10-10",
+     "time": "16:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": 0,
+    "question": null
+   },
+   "ms": 0.12249999999994543
+  },
+  {
+   "id": "fri-reminder-75",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning remind me an hour before",
+    "due": {
+     "date": "2026-10-10",
+     "time": "10:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.24099999999998545
+  },
+  {
+   "id": "fri-ambiguous-77",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport on February 30",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.21430000000009386
+  },
+  {
+   "id": "spring-relative-day-81",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-03-10",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.15570000000002437
+  },
+  {
+   "id": "spring-relative-day-83",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-03-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.15350000000000819
+  },
+  {
+   "id": "spring-weekday-84",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-03-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10550000000000637
+  },
+  {
+   "id": "spring-weekday-86",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-03-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10740000000009786
+  },
+  {
+   "id": "spring-ambiguous-88",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-03-12",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10710000000005948
+  },
+  {
+   "id": "spring-ambiguous-91",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-03-13",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09559999999999036
+  },
+  {
+   "id": "spring-time-of-day-93",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-03-08",
+     "time": "15:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13040000000000873
+  },
+  {
+   "id": "spring-time-of-day-95",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-03-08",
+     "time": "12:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12189999999998236
+  },
+  {
+   "id": "spring-time-of-day-97",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-03-08",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1110999999999649
+  },
+  {
+   "id": "spring-time-of-day-99",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning at end of day",
+    "due": {
+     "date": "2026-03-08",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10969999999997526
+  },
+  {
+   "id": "spring-near-midnight-102",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-03-07",
+     "time": "12:30"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13990000000001146
+  },
+  {
+   "id": "spring-ambiguous-103",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-03-09",
+     "time": "00:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13440000000002783
+  },
+  {
+   "id": "spring-dst-104",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-03-08",
+     "time": "02:30"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13769999999999527
+  },
+  {
+   "id": "spring-recurrence-107",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-03-07",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=DAILY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09360000000003765
+  },
+  {
+   "id": "spring-recurrence-109",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-03-12",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TH",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09550000000001546
+  },
+  {
+   "id": "spring-recurrence-110",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants on the first of",
+    "due": {
+     "date": "2026-03-09",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=MONTHLY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1528000000000702
+  },
+  {
+   "id": "spring-metadata-111",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": null,
+    "priority": 1,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08810000000005402
+  },
+  {
+   "id": "spring-metadata-113",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [
+     "home",
+     "errands"
+    ],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.06889999999998508
+  },
+  {
+   "id": "spring-metadata-115",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning for work",
+    "due": {
+     "date": "2026-03-08",
+     "time": null
+    },
+    "priority": 2,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09709999999995489
+  },
+  {
+   "id": "spring-reminder-116",
+   "result": {
+    "kind": "task",
+    "title": "book flights to Halifax",
+    "due": {
+     "date": "2026-03-08",
+     "time": "16:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": 0,
+    "question": null
+   },
+   "ms": 0.12329999999997199
+  },
+  {
+   "id": "spring-reminder-118",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants remind me an hour before",
+    "due": {
+     "date": "2026-03-08",
+     "time": "10:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.16970000000003438
+  },
+  {
+   "id": "spring-ambiguous-121",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill on November 31st",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11810000000002674
+  },
+  {
+   "id": "fall-relative-day-122",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-11-01",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09249999999997272
+  },
+  {
+   "id": "fall-relative-day-124",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-11-03",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12239999999997053
+  },
+  {
+   "id": "fall-relative-day-126",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-11-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.17809999999997217
+  },
+  {
+   "id": "fall-weekday-127",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-11-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.098700000000008
+  },
+  {
+   "id": "fall-weekday-129",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-11-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09300000000007458
+  },
+  {
+   "id": "fall-weekday-130",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-11-05",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09439999999995052
+  },
+  {
+   "id": "fall-weekday-132",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-11-05",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08920000000000528
+  },
+  {
+   "id": "fall-ambiguous-134",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-11-06",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08619999999996253
+  },
+  {
+   "id": "fall-time-of-day-136",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-11-01",
+     "time": "15:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12229999999999563
+  },
+  {
+   "id": "fall-time-of-day-138",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-11-01",
+     "time": "12:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11519999999995889
+  },
+  {
+   "id": "fall-time-of-day-141",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-11-01",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10730000000000928
+  },
+  {
+   "id": "fall-time-of-day-143",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-11-01",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1027000000000271
+  },
+  {
+   "id": "fall-near-midnight-144",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-10-31",
+     "time": "23:59"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11659999999994852
+  },
+  {
+   "id": "fall-dst-148",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-11-01",
+     "time": "02:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10820000000001073
+  },
+  {
+   "id": "fall-recurrence-149",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-11-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;BYDAY=MO",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.07519999999999527
+  },
+  {
+   "id": "fall-recurrence-150",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-10-31",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=DAILY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09849999999994452
+  },
+  {
+   "id": "fall-recurrence-152",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-11-05",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;INTERVAL=2;BYDAY=TH",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.0888999999999669
+  },
+  {
+   "id": "fall-metadata-155",
+   "result": {
+    "kind": "task",
+    "title": ": Pick up the dry cleaning",
+    "due": null,
+    "priority": 1,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09849999999994452
+  },
+  {
+   "id": "fall-metadata-157",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": null,
+    "priority": 4,
+    "projectName": "Work",
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11329999999998108
+  },
+  {
+   "id": "fall-reminder-161",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill remind me an hour before",
+    "due": {
+     "date": "2026-11-01",
+     "time": "10:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.18610000000001037
+  },
+  {
+   "id": "fall-ambiguous-163",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning on February 30",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13159999999993488
+  },
+  {
+   "id": "london-relative-day-165",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-03-29",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.3630000000000564
+  },
+  {
+   "id": "london-relative-day-167",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-03-31",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11479999999994561
+  },
+  {
+   "id": "london-relative-day-169",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-03-30",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1308999999999969
+  },
+  {
+   "id": "london-ambiguous-171",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-03-30",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11569999999994707
+  },
+  {
+   "id": "london-weekday-173",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2026-04-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10090000000002419
+  },
+  {
+   "id": "london-weekday-175",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-04-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10750000000007276
+  },
+  {
+   "id": "london-ambiguous-177",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-04-03",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11389999999994416
+  },
+  {
+   "id": "london-time-of-day-179",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-03-29",
+     "time": "15:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1190000000000282
+  },
+  {
+   "id": "london-time-of-day-180",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2026-03-29",
+     "time": "09:30"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11620000000004893
+  },
+  {
+   "id": "london-time-of-day-182",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants after lunch",
+    "due": {
+     "date": "2026-03-29",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.092899999999986
+  },
+  {
+   "id": "london-time-of-day-184",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-03-29",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.11389999999994416
+  },
+  {
+   "id": "london-time-of-day-186",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-03-29",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.15189999999995507
+  },
+  {
+   "id": "london-near-midnight-187",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2026-03-28",
+     "time": "23:59"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12840000000005602
+  },
+  {
+   "id": "london-dst-190",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2026-03-29",
+     "time": "01:15"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13279999999997472
+  },
+  {
+   "id": "london-recurrence-191",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2026-03-30",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;BYDAY=MO",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09190000000000964
+  },
+  {
+   "id": "london-recurrence-193",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2026-03-28",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08540000000004966
+  },
+  {
+   "id": "london-recurrence-195",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning on the first of",
+    "due": {
+     "date": "2026-03-30",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=MONTHLY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.12810000000001764
+  },
+  {
+   "id": "london-metadata-196",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": null,
+    "priority": 1,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09709999999995489
+  },
+  {
+   "id": "london-metadata-198",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [
+     "home",
+     "errands"
+    ],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.06460000000004129
+  },
+  {
+   "id": "london-metadata-200",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist for work",
+    "due": {
+     "date": "2026-03-29",
+     "time": null
+    },
+    "priority": 2,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09100000000000819
+  },
+  {
+   "id": "london-reminder-201",
+   "result": {
+    "kind": "task",
+    "title": "pay the electricity bill",
+    "due": {
+     "date": "2026-03-29",
+     "time": "16:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": 0,
+    "question": null
+   },
+   "ms": 0.11530000000004748
+  },
+  {
+   "id": "london-reminder-203",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning remind me an hour before",
+    "due": {
+     "date": "2026-03-29",
+     "time": "10:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.16880000000003292
+  },
+  {
+   "id": "london-ambiguous-205",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport on February 30",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.13549999999997908
+  },
+  {
+   "id": "nye-relative-day-208",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2026-12-31",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1428000000000793
+  },
+  {
+   "id": "nye-relative-day-211",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning",
+    "due": {
+     "date": "2027-01-02",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.14369999999996708
+  },
+  {
+   "id": "nye-weekday-212",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax",
+    "due": {
+     "date": "2027-01-04",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08510000000001128
+  },
+  {
+   "id": "nye-weekday-214",
+   "result": {
+    "kind": "task",
+    "title": "Water the plants",
+    "due": {
+     "date": "2027-01-04",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08969999999999345
+  },
+  {
+   "id": "nye-weekday-216",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2027-01-07",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.07899999999995089
+  },
+  {
+   "id": "nye-weekday-218",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2027-01-01",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.0746000000000322
+  },
+  {
+   "id": "nye-time-of-day-221",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": {
+     "date": "2027-01-01",
+     "time": "15:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.10929999999996198
+  },
+  {
+   "id": "nye-time-of-day-223",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": {
+     "date": "2027-01-01",
+     "time": "12:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.1067000000000462
+  },
+  {
+   "id": "nye-time-of-day-225",
+   "result": {
+    "kind": "task",
+    "title": "Pay the electricity bill",
+    "due": {
+     "date": "2027-01-01",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09239999999999782
+  },
+  {
+   "id": "nye-time-of-day-227",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning at end of day",
+    "due": {
+     "date": "2027-01-01",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.0767999999999347
+  },
+  {
+   "id": "nye-recurrence-232",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": {
+     "date": "2027-01-04",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;BYDAY=MO",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.05740000000002965
+  },
+  {
+   "id": "nye-recurrence-234",
+   "result": {
+    "kind": "task",
+    "title": "Email Sam about the budget",
+    "due": {
+     "date": "2026-12-31",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.06290000000001328
+  },
+  {
+   "id": "nye-recurrence-236",
+   "result": {
+    "kind": "task",
+    "title": "Book flights to Halifax on the first of",
+    "due": {
+     "date": "2027-01-04",
+     "time": null
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": "FREQ=MONTHLY",
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.09449999999992542
+  },
+  {
+   "id": "nye-metadata-237",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": null,
+    "priority": 1,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.07499999999993179
+  },
+  {
+   "id": "nye-metadata-239",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [
+     "home",
+     "errands"
+    ],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.07019999999999982
+  },
+  {
+   "id": "nye-metadata-240",
+   "result": {
+    "kind": "task",
+    "title": "Call the dentist",
+    "due": null,
+    "priority": 4,
+    "projectName": "Work",
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.06340000000000146
+  },
+  {
+   "id": "nye-reminder-243",
+   "result": {
+    "kind": "task",
+    "title": "Pick up the dry cleaning , remind me",
+    "due": {
+     "date": "2027-01-01",
+     "time": "14:00"
+    },
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": 30,
+    "question": null
+   },
+   "ms": 0.13679999999999382
+  },
+  {
+   "id": "nye-no-date-245",
+   "result": {
+    "kind": "task",
+    "title": "Renew my passport",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.054300000000012005
+  },
+  {
+   "id": "nye-ambiguous-247",
+   "result": {
+    "kind": "task",
+    "title": "Submit the timesheet on November 31st",
+    "due": null,
+    "priority": 4,
+    "projectName": null,
+    "tags": [],
+    "recurrence": null,
+    "reminderMinutesBefore": null,
+    "question": null
+   },
+   "ms": 0.08820000000002892
+  }
+ ],
+ "grades": [
+  {
+   "id": "tue-relative-day-0",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-relative-day-2",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-relative-day-4",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-weekday-5",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-weekday-7",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-weekday-9",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-weekday-10",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-weekday-12",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-time-of-day-14",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-time-of-day-16",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-time-of-day-18",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-time-of-day-21",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-recurrence-23",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-recurrence-25",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-metadata-28",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-metadata-31",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": false,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7499999999999999,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-reminder-32",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-reminder-34",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": false
+   },
+   "titleF1": 0.6666666666666666,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "tue-ambiguous-36",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "fri-relative-day-38",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-relative-day-41",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-ambiguous-44",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "fri-weekday-46",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-weekday-48",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-weekday-51",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-time-of-day-53",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-time-of-day-55",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7499999999999999,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-time-of-day-57",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-time-of-day-59",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-near-midnight-61",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-ambiguous-62",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "fri-recurrence-64",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-recurrence-66",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-metadata-69",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-metadata-70",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-metadata-72",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": false,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7499999999999999,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-reminder-73",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-reminder-75",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": false
+   },
+   "titleF1": 0.6666666666666666,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fri-ambiguous-77",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "spring-relative-day-81",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-relative-day-83",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-weekday-84",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-weekday-86",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-ambiguous-88",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "spring-ambiguous-91",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "spring-time-of-day-93",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-time-of-day-95",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-time-of-day-97",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-time-of-day-99",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7142857142857143,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-near-midnight-102",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-ambiguous-103",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "spring-dst-104",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-recurrence-107",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-recurrence-109",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-recurrence-110",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": false,
+    "reminder": true
+   },
+   "titleF1": 0.6,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-metadata-111",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-metadata-113",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-metadata-115",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": false,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.8333333333333333,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-reminder-116",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-reminder-118",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": false
+   },
+   "titleF1": 0.5454545454545454,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "spring-ambiguous-121",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "fall-relative-day-122",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-relative-day-124",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-relative-day-126",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-weekday-127",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-weekday-129",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-weekday-130",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-weekday-132",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-ambiguous-134",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "fall-time-of-day-136",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-time-of-day-138",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-time-of-day-141",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-time-of-day-143",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-near-midnight-144",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-dst-148",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-recurrence-149",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-recurrence-150",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-recurrence-152",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-metadata-155",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-metadata-157",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-reminder-161",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": false
+   },
+   "titleF1": 0.6153846153846153,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "fall-ambiguous-163",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "london-relative-day-165",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-relative-day-167",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-relative-day-169",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-ambiguous-171",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "london-weekday-173",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-weekday-175",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-ambiguous-177",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "london-time-of-day-179",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-time-of-day-180",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-time-of-day-182",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7499999999999999,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-time-of-day-184",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-time-of-day-186",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-near-midnight-187",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-dst-190",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-recurrence-191",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-recurrence-193",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-recurrence-195",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": false,
+    "reminder": true
+   },
+   "titleF1": 0.7142857142857143,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-metadata-196",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-metadata-198",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-metadata-200",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": false,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7499999999999999,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-reminder-201",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-reminder-203",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": false
+   },
+   "titleF1": 0.6666666666666666,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "london-ambiguous-205",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  },
+  {
+   "id": "nye-relative-day-208",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-relative-day-211",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-weekday-212",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-weekday-214",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-weekday-216",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-weekday-218",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-time-of-day-221",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-time-of-day-223",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-time-of-day-225",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-time-of-day-227",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": false,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.7142857142857143,
+   "confidentlyWrong": true,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-recurrence-232",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-recurrence-234",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-recurrence-236",
+   "correct": false,
+   "fields": {
+    "kind": true,
+    "title": false,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": false,
+    "reminder": true
+   },
+   "titleF1": 0.6666666666666666,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-metadata-237",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-metadata-239",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-metadata-240",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-reminder-243",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 0.8333333333333333,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-no-date-245",
+   "correct": true,
+   "fields": {
+    "kind": true,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": false
+  },
+  {
+   "id": "nye-ambiguous-247",
+   "correct": false,
+   "fields": {
+    "kind": false,
+    "title": true,
+    "due": true,
+    "priority": true,
+    "project": true,
+    "tags": true,
+    "recurrence": true,
+    "reminder": true
+   },
+   "titleF1": 1,
+   "confidentlyWrong": false,
+   "falseClarify": false,
+   "missedClarify": true
+  }
+ ]
+}

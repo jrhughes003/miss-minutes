@@ -29,6 +29,8 @@
     "src/test/repoContract.ts",
     "src/test/reminderLogContract.ts",
     "e2e/**/*.ts",
+    "eval/**/*.ts",
+    "src/core/**/*.ts",
     "e2e-electron/**/*.ts",
     "e2e-demo/**/*.ts",
     "playwright.demo.config.ts",

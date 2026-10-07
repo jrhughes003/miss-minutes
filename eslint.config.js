@@ -57,7 +57,7 @@ export default tseslint.config(
   // is always a mistake, and this is where mistakes reach the filesystem and
   // the secrets.
   {
-    files: ['electron/**/*.ts', 'scripts/**/*.{js,mjs}', '*.config.{js,ts}', 'e2e/**/*.ts', 'e2e-electron/**/*.ts', 'e2e-demo/**/*.ts'],
+    files: ['electron/**/*.ts', 'eval/**/*.ts', 'scripts/**/*.{js,mjs}', '*.config.{js,ts}', 'e2e/**/*.ts', 'e2e-electron/**/*.ts', 'e2e-demo/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
   {

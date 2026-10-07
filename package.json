@@ -24,9 +24,12 @@
     "typecheck": "tsc -b",
     "check": "npm run typecheck && npm run lint && npm test",
     "dist": "npm run build && node scripts/build-electron.mjs && cross-env ELECTRON_BUILDER_CACHE=node_modules/.cache/electron-builder electron-builder --win --publish never",
-    "electron": "npm run build && node scripts/build-electron.mjs && node scripts/run-electron.mjs"
+    "electron": "npm run build && node scripts/build-electron.mjs && node scripts/run-electron.mjs",
+    "eval:parse": "node scripts/run-eval.mjs eval/parse/run.ts",
+    "ai:mock": "node scripts/run-eval.mjs electron/ai/mockMain.ts"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.63.0",
@@ -38,6 +41,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "@vitest/coverage-v8": "^5.0.3",
+    "chrono-node": "^2.10.2",
     "concurrently": "^10.0.5",
     "cross-env": "^10.1.0",
     "electron": "^44.6.0",
@@ -56,7 +60,8 @@
     "typescript-eslint": "^8.71.1",
     "vite": "^8.3.3",
     "vitest": "^5.0.3",
-    "wait-on": "^9.5.1"
+    "wait-on": "^9.5.1",
+    "zod": "^4.6.5"
   },
   "build": {
     "appId": "com.missminutes.app",
