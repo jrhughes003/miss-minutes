@@ -221,8 +221,8 @@ allowed keys.
 - Live runs cost money, so each run's estimated cost is stated and approved first.
 
 ### 5.1 Natural-language parsing eval
-- **Case set:** about 160 cases in `eval/parse/cases.ts`. Each case has an input, a fixed
-  "now" and a zone.
+- **Case set:** about 160 cases in `eval/parse/cases.ts` (as built: 248, frozen 2026-10-06, see D34).
+  Each case has an input, a fixed "now" and a zone.
 - **Categories:**
   - relative days ("tomorrow", "in 3 days");
   - "this Friday" vs "next Friday", asked on different weekdays;

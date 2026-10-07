@@ -119,32 +119,38 @@ asked about, so here are short walkthroughs of those:
    - **Key by wall-clock time** (`rule|2026-10-08T13:15`). A zone change or the repeated
      fall-back hour can't produce a second key, so neither can produce a second notification.
 
-## Current state (2026-10-06, second autonomous session)
-- M0–M5 are committed and pushed (through `2f81f5b`). M5 has been tested against a fake Google
-  server only; a real sign-in is still your check.
-- **Two problems found after the push, both now explained:**
-  1. **CI "Desktop end-to-end" failed** in the Google test. It was a real UI bug: the calendar
-     checkboxes only changed after a round trip to the main process, so a click briefly looked
-     ignored (and Playwright saw no change). **Fixed** with optimistic checkboxes that revert if
-     the change fails. Verified with the full desktop suite (5/5) and the Google test three times
-     in a row. In the previous session I misread a "4 passed" summary that also had this
-     failure; I now check the failed count explicitly.
-  2. **The Pages site is black/empty.** Pages is set to **"Deploy from a branch"**, so GitHub
-     serves the repository's *source* `index.html`, which loads `./src/main.tsx`, and browsers
-     can't run that. The "Deploy demo" workflow *did* build and deploy the real demo
-     successfully, but that isn't what Pages is serving. **Fix (you, one minute):**
-     repository **Settings → Pages → Build and deployment → Source: "GitHub Actions"**, then
-     re-run the latest "Deploy demo" workflow from the Actions tab.
-- D33 records the Loki/TVA-inspired visual direction (to build in M11), with an IP caution about
-  the name.
-- Working on: M6 (natural-language capture with the mock AI server, plus the parse eval
-  harness). No paid API calls.
+## Current state (2026-10-07, second autonomous session)
+- M0–M5 and commit 12 are committed and pushed by you.
+- **M6 (natural-language capture plus the parse eval) is built.** All checks pass:
+  - `npm run check` (297 unit tests) and coverage thresholds;
+  - end-to-end: web 4/4, demo 4/4, desktop 6/6 (including AI capture against the mock server,
+    and the rebuilt packaged app).
+- **Parse eval, baseline (on-device parser), dev split:**
+  - fully correct **72.7 %**;
+  - confidently wrong **18.2 %**;
+  - clarification recall **0 %** (it never asks, by design);
+  - false clarification **0 %**.
+  Report: `eval/results/parse-baseline-dev-2026-10-07.md`.
+- **Not run yet, and it needs you:** the Claude system. It needs your API key and your OK on
+  cost, about **$0.20 for the dev split** and **$0.41 for all 248 cases** on Haiku 4.5. The test
+  split should be run once, for the release candidate:
+  ```powershell
+  cd C:\Users\jrhug\Documents\GitHub\miss-minutes
+  $env:ANTHROPIC_API_KEY = "<your key>"
+  npm run eval:parse -- --system claude --split dev --accept-cost
+  npm run eval:parse -- --system baseline --split test
+  npm run eval:parse -- --system claude --split test --accept-cost
+  ```
+  The ship rule (PLAN §5.1): Claude becomes the default only if it beats the baseline by
+  ≥ 10 pp on fully correct *and* is confidently wrong no more often than the baseline.
+  Until then, capture uses Claude only when you add a key and leave "Use Claude" on.
+- Still open from before: changing the Pages source to "GitHub Actions" (yours), and a real
+  Google sign-in (yours).
 
 ## Next up
-1. **You:** commit 12 (below) and push; change the Pages source (above) and re-run "Deploy demo".
-2. M6: the AI client, the payload allow-list, the usage log, the mock server, capture UI, and
-   the parse-eval case set and grader (a teaching module, D25). The deterministic baseline is
-   measured; the Claude run waits for your key and your OK on cost.
+1. **You:** commits 13–15 below, then push. Optionally run the Claude eval above.
+2. **Next:** M7 (task breakdown). It's small and uses the same AI service, payload allow-list,
+   mock and usage log.
 
 ## Open questions for owner
 - ~~D13 (the Google Tasks merge rules)~~ Decided on 2026-10-06 in D31. M8 is unblocked.
@@ -190,23 +196,75 @@ asked about, so here are short walkthroughs of those:
   electron-builder's tools were cached inside the project (`node_modules/.cache`).
 
 ## Suggested commits (in order; nothing is staged or committed)
-Commits 1–11 are yours (through `2f81f5b`).
+Commits 1–12 are yours (through `12755e8`). Push 13–15 together: commit 13 alone doesn't
+typecheck, because the eval runner can load the Claude parser from commit 14. CI only checks
+the pushed head.
 
-12. **Make calendar checkboxes respond immediately**
+13. **Freeze a 248-case parse eval and measure the on-device parser**
     ```powershell
-    git add -- src/ui/GoogleSettings.tsx DECISIONS.md PLAN.md PROGRESS.md
+    cd C:\Users\jrhug\Documents\GitHub\miss-minutes
+    git add -- src/core/capture eval/parse eval/results/parse-baseline-dev-2026-10-07.md eval/results/parse-baseline-dev-2026-10-07.json scripts/run-eval.mjs vitest.config.ts tsconfig.node.json eslint.config.js package.json package-lock.json
     ```
     ```
-    Make calendar checkboxes respond immediately
+    Freeze a 248-case parse eval and measure the on-device parser
 
-    Choosing which Google calendars to show waited for a round trip to the
-    main process before the checkbox changed, so a click briefly looked
-    ignored. That is what failed CI's desktop test. The box now flips at
-    once and reverts with an error if the change fails.
+    The cases were written before any prompt existed, from conventions set
+    down in advance (week starts Monday, "this" vs "next" Friday, "after
+    lunch" is 13:00, "tonight at 12:30" is after midnight, when to ask
+    instead of guess), over six reference moments including both DST
+    changes and New Year's Eve. Expected answers are computed with plain
+    calendar arithmetic, independent of either parser, and every case sits
+    in a fixed dev or test split.
 
-    DECISIONS.md gains D33, the Loki-inspired retro-futurist visual
-    direction planned for M11, with a note on keeping it to original art
-    and on the trademark risk in the app's name.
+    The grader is programmatic: token F1 for titles, exact due dates and
+    times, and repeat rules compared by their next ten occurrences. It
+    reports the pre-registered metrics, including "confidently wrong", a
+    wrong date given without a question.
+
+    The on-device parser (chrono-node plus light glue), frozen before any
+    results: 72.7 % fully correct and 18.2 % confidently wrong on the dev
+    split, and it never asks.
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    ```
+14. **Understand typed sentences, with Claude when enabled and on-device otherwise**
+    ```powershell
+    cd C:\Users\jrhug\Documents\GitHub\miss-minutes
+    git add -- electron/ai electron/db/migrations.ts electron/ipc.test.ts electron/main.ts src/shared/ai.ts src/shared/ipc.ts src/storage/api.ts src/styles.css src/ui/capture src/ui/AiSettings.tsx src/ui/OptimisticToggle.tsx src/ui/OptimisticToggle.test.tsx src/ui/GoogleSettings.tsx src/ui/SettingsView.tsx src/ui/TodayView.tsx src/ui/tasks/TasksView.tsx e2e/tasks.spec.ts e2e-demo/demo.spec.ts e2e-electron/ai.spec.ts
+    ```
+    ```
+    Understand typed sentences, with Claude when enabled and on-device otherwise
+
+    Typing "Call the dentist Thursday at 3pm p2" now shows an editable card
+    with what was understood; nothing is saved until you confirm, and
+    ambiguous input gets a question instead of a guess. Claude (Haiku 4.5,
+    structured outputs) is used when you add your own API key and leave it
+    on; otherwise, at the spending limit, or on any API error, the on-device
+    parser answers and the card says so.
+
+    Only the sentence, today's date and zone, and project and tag names are
+    sent, enforced by a per-feature allow-list. Each call's tokens and cost
+    are logged (never the text) for a monthly usage table with a warning
+    amount and an optional hard limit. The key is stored encrypted and never
+    returned to the page.
+
+    A local mock Anthropic server lets every test run without cost, and the
+    web demo's AI is visibly labelled as simulated. Checkboxes that save to
+    the main process now flip immediately and revert on error.
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    ```
+15. **Record the capture decisions**
+    ```powershell
+    cd C:\Users\jrhug\Documents\GitHub\miss-minutes
+    git add -- DECISIONS.md PLAN.md PROGRESS.md
+    ```
+    ```
+    Record the capture decisions
+
+    D34 covers the preview-before-save flow, the frozen baseline, the
+    re-validation of model output, the usage log and caps, how mock and
+    simulated AI are labelled, and why the case set has 248 cases.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
@@ -220,7 +278,7 @@ Commits 1–11 are yours (through `2f81f5b`).
 | M3 | Today view + first desktop install | S–M | ✅ done locally; installer ready, not installed |
 | M4 | Web demo + Playwright/axe + privacy page | M | ✅ done locally (deploy needs you to push and turn on Pages) |
 | M5 | Google sign-in + Calendar read | L | ✅ built and tested against a fake Google server; real sign-in check is yours |
-| M6 | AI: NL capture + parse eval (grader is a teaching module) | M | ☐ |
+| M6 | AI: NL capture + parse eval (grader is a teaching module) | M | ✅ built; baseline measured; Claude run needs your key and OK |
 | M7 | AI: task breakdown | S | ☐ |
 | M8 | Google Tasks two-way sync | L | ☐ (rules decided in D31) |
 | M9 | Calendar write + 📱 phone reminders | M | ☐ |

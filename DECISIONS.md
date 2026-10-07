@@ -530,3 +530,38 @@ D13 stands as written, with three additions. M8 is no longer blocked.
   milestone before M11 if the owner prefers. Tokens in `src/styles.css` are already centralised,
   so most of the restyle is a theme swap plus a few components.
 
+### D34. Natural-language capture as built (design, M6; PROVISIONAL – needs owner review)
+- **Always a preview, except for plain sentences.** A sentence with a date, repeat, priority,
+  tag, project or reminder shows an editable card before anything is saved. A sentence with
+  nothing to understand ("Buy milk") is added at once, like the old quick-add. Clarifying
+  questions get an answer box and a retry.
+- **Capture always works.** Without a key, with AI switched off, at the hard spending cap, or
+  when the API errors, the on-device parser answers, and the card says which one did and why
+  ("Understood on this device", "…Claude is rate-limited…").
+- **The baseline was frozen before results:** `chrono-node` plus light glue, written before
+  any eval run and not tuned afterwards, even where the dev results showed obvious weaknesses
+  (for example "morning" = 06:00, or "every weekday" starting on a Saturday). It's the honest
+  comparison point, not a strawman, and it's the user-facing fallback.
+- **Model use:** `claude-haiku-4-5` with structured outputs (`output_config.format`, a Zod
+  schema), not forced tool choice (D17). The reply is validated again in code. An invalid date
+  becomes a question, and an unknown project, invalid priority, malformed time or invalid RRULE
+  is dropped.
+- **Usage log:** per call, it records feature, model, tokens, cost, latency and success. It
+  never records the prompt or the reply. The soft cap defaults to $2/month (warning only),
+  and there is no hard cap until the user sets one.
+- **API key:** the shape is checked (`sk-ant-…`) before saving, it's stored encrypted, and it's
+  never returned to the page.
+- **Mock vs. simulated:**
+  - The desktop app can point at a local mock Anthropic server (`MISS_MINUTES_AI_BASE_URL`,
+    `npm run ai:mock`) for development and tests. It's labelled "Development mode".
+  - The web demo simulates AI in the page and is labelled "Simulated", with estimated usage.
+  - Neither can be mistaken for real results. The eval runner names any run against a local
+    server "mock" and says "NOT a real model".
+- **Case-set size:** the frozen parse eval has **248** cases (124 dev, 124 test), not the
+  "about 160" in PLAN §5.1. The templates were crossed with six reference moments, which gave
+  more coverage of DST and week boundaries. The targets are unchanged.
+- **Optimistic toggles:** every checkbox that saves to the main process (calendars, "Use
+  Claude", "Start at login") flips at once and reverts on error (`src/ui/OptimisticToggle.tsx`).
+  A round-trip delay had made clicks look ignored. It was found twice by end-to-end tests and
+  fixed once for all.
+
