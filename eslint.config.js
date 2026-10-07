@@ -11,7 +11,7 @@ import tseslint from 'typescript-eslint'
 const unusedVars = ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true }]
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'dist-electron/**', 'release/**', 'coverage/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'] },
+  { ignores: ['dist/**', 'dist-demo/**', 'dist-electron/**', 'release/**', 'coverage/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'] },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -57,7 +57,7 @@ export default tseslint.config(
   // is always a mistake, and this is where mistakes reach the filesystem and
   // the secrets.
   {
-    files: ['electron/**/*.ts', 'scripts/**/*.{js,mjs}', '*.config.{js,ts}', 'e2e/**/*.ts', 'e2e-electron/**/*.ts'],
+    files: ['electron/**/*.ts', 'scripts/**/*.{js,mjs}', '*.config.{js,ts}', 'e2e/**/*.ts', 'e2e-electron/**/*.ts', 'e2e-demo/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
   {

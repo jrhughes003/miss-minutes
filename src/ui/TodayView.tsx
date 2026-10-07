@@ -4,6 +4,7 @@
 
 import { useEffect, useId, useMemo, useState, type FormEvent } from 'react'
 import type { Task } from '../core/tasks/types'
+import { toLocalDate } from '../core/time'
 import { buildToday, type TimelineItem } from '../core/today'
 import { toAppError } from '../storage/api'
 import { useClock } from './clock'
@@ -37,10 +38,12 @@ export function TodayView({ onOpenTasks }: { onOpenTasks: () => void }) {
   const { data: tasks = [] } = useLive((a) => a.tasks.list({ status: 'open', includeSubtasks: true }), [], ['tasks'])
   const { data: projects = [] } = useLive((a) => a.projects.list(), [], ['projects'])
   const { data: settings } = useLive((a) => a.settings.get(), [], ['settings'])
+  const todayKey = toLocalDate(now, clock.zone())
+  const { data: events = [] } = useLive((a) => a.calendar.events(todayKey, todayKey), [todayKey], ['settings', 'calendar'])
 
   const model = useMemo(
-    () => buildToday({ tasks, now, zone: clock.zone(), ...(settings ? { allDayTime: settings.allDayReminderTime } : {}) }),
-    [tasks, now, clock, settings],
+    () => buildToday({ tasks, events, now, zone: clock.zone(), ...(settings ? { allDayTime: settings.allDayReminderTime } : {}) }),
+    [tasks, events, now, clock, settings],
   )
   const projectById = useMemo(() => new Map(projects.map((p) => [p.id, p])), [projects])
 
@@ -107,7 +110,7 @@ export function TodayView({ onOpenTasks }: { onOpenTasks: () => void }) {
           ) : (
             <ol className="timeline">
               {model.timeline.map((item, i) => (
-                <TimelineRow key={itemKey(item)} item={item} showNow={i === model.nowIndex} now={now} zoneTime={formatTime} row={row} />
+                <TimelineRow key={itemKey(item)} item={item} past={i < model.nowIndex} showNow={i === model.nowIndex} now={now} zoneTime={formatTime} row={row} />
               ))}
               {model.nowIndex === model.timeline.length && <NowLine now={now} />}
             </ol>
@@ -152,11 +155,11 @@ function NowLine({ now }: { now: Date }) {
   )
 }
 
-function TimelineRow({ item, showNow, now, zoneTime, row }: { item: TimelineItem; showNow: boolean; now: Date; zoneTime: (t: string) => string; row: (t: Task) => React.ReactNode }) {
+function TimelineRow({ item, past, showNow, now, zoneTime, row }: { item: TimelineItem; past: boolean; showNow: boolean; now: Date; zoneTime: (t: string) => string; row: (t: Task) => React.ReactNode }) {
   return (
     <>
       {showNow && <NowLine now={now} />}
-      <li className={`timeline-item kind-${item.kind}`}>
+      <li className={`timeline-item kind-${item.kind}${past ? ' is-past' : ''}`}>
         <span className="time">{item.time === '24:00' ? 'midnight' : zoneTime(item.time)}</span>
         <div className="timeline-body">
           {item.kind === 'task' && <ul className="task-list bare">{row(item.task)}</ul>}

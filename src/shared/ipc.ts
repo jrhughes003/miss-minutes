@@ -13,6 +13,8 @@
 import type { ActiveReminder, ReminderAction } from '../core/reminders/types'
 import type { Settings } from '../core/settings'
 import type { NewTask, Project, Task, TaskPatch, TaskQuery } from '../core/tasks/types'
+import type { CalendarEvent } from '../core/today'
+import type { GoogleStatus } from './google'
 
 export interface AppInfo {
   name: string
@@ -47,6 +49,17 @@ export interface IpcContract {
 
   'settings:get': { args: []; result: Settings }
   'settings:set': { args: [patch: Partial<Settings>]; result: Settings }
+
+  /** Events overlapping the local dates [from, to]. Empty until Google Calendar is connected (M5). */
+  'calendar:events': { args: [from: string, to: string]; result: CalendarEvent[] }
+
+  'google:status': { args: []; result: GoogleStatus }
+  /** The Desktop-app OAuth client JSON, read from the file the user picked. Stored encrypted. */
+  'google:importClient': { args: [json: string]; result: GoogleStatus }
+  'google:connect': { args: []; result: GoogleStatus }
+  'google:disconnect': { args: []; result: GoogleStatus }
+  'google:setCalendar': { args: [id: string, selected: boolean]; result: GoogleStatus }
+  'google:syncNow': { args: []; result: GoogleStatus }
 }
 
 export type Channel = keyof IpcContract
@@ -74,6 +87,13 @@ const CHANNEL_SET: Record<Channel, true> = {
   'reminders:act': true,
   'settings:get': true,
   'settings:set': true,
+  'calendar:events': true,
+  'google:status': true,
+  'google:importClient': true,
+  'google:connect': true,
+  'google:disconnect': true,
+  'google:setCalendar': true,
+  'google:syncNow': true,
 }
 
 export const CHANNELS = Object.freeze(Object.keys(CHANNEL_SET) as Channel[])
@@ -85,7 +105,7 @@ export function isChannel(value: unknown): value is Channel {
 /** Events pushed from main to renderer (not request/response). */
 export interface PushEvents {
   /** Something changed in the database; the renderer should refetch. */
-  'data:changed': { scope: 'tasks' | 'reminders' | 'projects' | 'settings' }
+  'data:changed': { scope: 'tasks' | 'reminders' | 'projects' | 'settings' | 'calendar' }
   /** The user clicked a reminder notification: show that reminder. */
   'reminder:open': { ruleId: string; occurrenceLocal: string; taskId: string }
 }

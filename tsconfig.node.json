@@ -25,10 +25,13 @@
     // DOM-free helpers shared with the Electron tests.
     "src/storage/localRepo.ts",
     "src/storage/localReminderLog.ts",
+    "src/demo/fakeCalendar.ts",
     "src/test/repoContract.ts",
     "src/test/reminderLogContract.ts",
     "e2e/**/*.ts",
     "e2e-electron/**/*.ts",
+    "e2e-demo/**/*.ts",
+    "playwright.demo.config.ts",
     "playwright.electron.config.ts",
     "vite.config.ts",
     "vitest.config.ts",

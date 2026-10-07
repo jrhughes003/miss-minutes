@@ -8,7 +8,7 @@
 
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
-import { app, BrowserWindow, dialog, ipcMain, Menu, session, Tray } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, session, shell, Tray } from 'electron'
 import { systemClock } from '../src/core/clock'
 import { readSettings, writeSettings } from '../src/core/settings'
 import { TaskService } from '../src/core/tasks/service'
@@ -19,6 +19,10 @@ import { SqliteReminderLog } from './db/reminderLog'
 import { sqliteSettingsStore } from './db/settingsStore'
 import { SqliteTaskRepo } from './db/taskRepo'
 import { registerIpcHandlers, type Handlers } from './ipc'
+import { CalendarStore } from './google/calendarStore'
+import { GOOGLE_ENDPOINTS, type GoogleEndpoints } from './google/oauth'
+import { sqliteSecretStore } from './google/secrets'
+import { GoogleService } from './google/service'
 import { startReminderService } from './reminders'
 import { applySessionSecurity, applyWindowSecurity } from './security'
 import { makeTaskHandlers } from './taskHandlers'
@@ -45,6 +49,29 @@ let tray: Tray | null = null
 let db: SqlDatabase | null = null
 let quitting = false
 let stopReminders: (() => void) | null = null
+let stopGoogleSync: (() => void) | null = null
+
+// Tests point Google traffic at a local fake server. A real sign-in always
+// goes to Google's own endpoints.
+const endpointOverride = process.env.MISS_MINUTES_GOOGLE_ENDPOINTS
+const googleEndpoints: GoogleEndpoints = endpointOverride ? (JSON.parse(endpointOverride) as GoogleEndpoints) : GOOGLE_ENDPOINTS
+const GOOGLE_SYNC_MS = Number(process.env.MISS_MINUTES_SYNC_MS) || 5 * 60_000
+
+/**
+ * Opens the Google sign-in page in the user's browser. With a fake server (tests
+ * only), it plays the consenting browser itself; that path is impossible
+ * against Google's real endpoints, which need a human to sign in.
+ */
+async function openBrowser(url: string): Promise<void> {
+  if (endpointOverride && process.env.MISS_MINUTES_HEADLESS_CONSENT === '1') {
+    const res = await fetch(url, { redirect: 'manual' })
+    const location = res.headers.get('location')
+    if (location) await fetch(location)
+    return
+  }
+  if (!/^https:\/\//.test(url) && !endpointOverride) throw new Error('Refusing to open a non-HTTPS sign-in URL.')
+  await shell.openExternal(url)
+}
 
 function push<P extends PushChannel>(channel: P, payload: PushEvents[P]): void {
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(channel, payload)
@@ -93,6 +120,35 @@ function start(): void {
 
   applyLoginItem(readSettings(settingsStore).startAtLogin)
 
+  const google = new GoogleService({
+    fetch,
+    endpoints: googleEndpoints,
+    secrets: sqliteSecretStore(db, {
+      available: () => safeStorage.isEncryptionAvailable(),
+      encrypt: (s) => safeStorage.encryptString(s),
+      decrypt: (b) => safeStorage.decryptString(b),
+    }),
+    store: new CalendarStore(db),
+    clock: systemClock,
+    openBrowser,
+    onChange: () => push('data:changed', { scope: 'calendar' }),
+  })
+  // Sync every few minutes, and when the window gains focus (at most once a minute).
+  const syncTimer = setInterval(() => void google.sync(), GOOGLE_SYNC_MS)
+  let lastFocusSync = 0
+  const onFocus = () => {
+    if (Date.now() - lastFocusSync > 60_000) {
+      lastFocusSync = Date.now()
+      void google.sync()
+    }
+  }
+  app.on('browser-window-focus', onFocus)
+  stopGoogleSync = () => {
+    clearInterval(syncTimer)
+    app.removeListener('browser-window-focus', onFocus)
+  }
+  void google.sync()
+
   const handlers: Handlers = {
     'app:info': () => ({
       name: app.getName(),
@@ -110,6 +166,16 @@ function start(): void {
     'reminders:act': (ruleId, occurrenceLocal, action) => {
       reminders.engine.act(ruleId, occurrenceLocal, action)
       if (action.kind === 'done') push('data:changed', { scope: 'tasks' })
+    },
+    'calendar:events': (from, to) => google.events(from, to),
+    'google:status': () => google.status(),
+    'google:importClient': (json) => google.importClient(json),
+    'google:connect': () => google.connect(),
+    'google:disconnect': () => google.disconnect(),
+    'google:setCalendar': (id, selected) => google.setCalendar(id, selected),
+    'google:syncNow': async () => {
+      await google.sync()
+      return google.status()
     },
     'settings:get': () => readSettings(settingsStore),
     'settings:set': (patch) => {
@@ -208,6 +274,7 @@ app.on('window-all-closed', () => {
 
 app.on('will-quit', () => {
   stopReminders?.()
+  stopGoogleSync?.()
   tray?.destroy()
   db?.close()
   db = null

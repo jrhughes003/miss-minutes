@@ -212,7 +212,31 @@ fieldset.field { border: 0; padding: 0; margin: 0 0 10px; }
 .task-list.bare .task-row { border-bottom: 0; padding: 0; }
 .reminder-item, .event-item { margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .now-line { position: relative; color: var(--accent); }
+/* Earlier today: quieter, but still above 4.5:1 contrast (muted text, not opacity). */
+.timeline-item.is-past .event-item, .timeline-item.is-past .reminder-item, .timeline-item.is-past .task-title { color: var(--text-muted); }
 .now-line .time { color: var(--accent); font-weight: 600; }
 .now-label { border-top: 2px solid var(--accent); padding-top: 2px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
 .link-button { border: 0; background: none; padding: 0; min-height: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
 .link-button:hover { background: none; }
+
+/* Demo */
+.demo-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  border: 1px dashed var(--border); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 16px;
+  background: var(--surface);
+}
+.demo-banner p { margin: 0; flex: 1 1 320px; }
+.demo-actions { display: flex; gap: 6px; }
+.statusbar { display: flex; justify-content: space-between; gap: 12px; }
+.footer-link { color: inherit; }
+
+/* Google settings */
+.steps-list { padding-left: 1.2em; display: grid; gap: 10px; }
+.file-button {
+  display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 6px;
+  padding: 4px 10px; cursor: pointer; background: var(--surface);
+}
+.file-button:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.calendar-choices { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 4px; }
+.inline-actions { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ok-text { color: var(--ok); font-weight: 600; }

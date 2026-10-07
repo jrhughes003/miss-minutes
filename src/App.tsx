@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { storageMode } from './storage/runtime'
 import { ActiveReminders } from './ui/ActiveReminders'
+import { DemoBanner } from './ui/DemoBanner'
 import { SettingsView } from './ui/SettingsView'
 import { TasksView } from './ui/tasks/TasksView'
 import { TodayView } from './ui/TodayView'
@@ -42,6 +43,7 @@ export function App() {
       </header>
 
       <main className={`content${view === 'settings' ? '' : ' wide'}`} id="main">
+        <DemoBanner />
         <ActiveReminders />
         {view === 'tasks' ? (
           <TasksView />
@@ -54,6 +56,9 @@ export function App() {
 
       <footer className="statusbar">
         <span>Storage: {storageMode === 'sqlite' ? 'SQLite (desktop)' : 'this browser (demo)'}</span>
+        {storageMode === 'localStorage' && (
+          <a href="./privacy.html" className="footer-link">Privacy</a>
+        )}
       </footer>
     </div>
   )

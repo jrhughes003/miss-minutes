@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { FakeClock } from '../src/core/clock'
 import { ValidationError } from '../src/core/tasks/normalize'
 import { TaskService } from '../src/core/tasks/service'
+import { UNAVAILABLE_GOOGLE } from '../src/shared/google'
 import { CHANNELS, decodeIpcError, isChannel } from '../src/shared/ipc'
 import { LocalTaskRepo, memoryStorage } from '../src/storage/localRepo'
 import { isTrustedSender, registerIpcHandlers, type Handlers, type IpcMainLike, type SenderInfo } from './ipc'
@@ -23,6 +24,13 @@ function setup() {
     'reminders:act': () => undefined,
     'settings:get': () => ({ allDayReminderTime: '09:00', startAtLogin: false }),
     'settings:set': () => ({ allDayReminderTime: '09:00', startAtLogin: false }),
+    'calendar:events': () => [],
+    'google:status': () => UNAVAILABLE_GOOGLE,
+    'google:importClient': () => UNAVAILABLE_GOOGLE,
+    'google:connect': () => UNAVAILABLE_GOOGLE,
+    'google:disconnect': () => UNAVAILABLE_GOOGLE,
+    'google:setCalendar': () => UNAVAILABLE_GOOGLE,
+    'google:syncNow': () => UNAVAILABLE_GOOGLE,
   }
   registerIpcHandlers(ipc, handlers)
   const call = (channel: string, ...args: unknown[]) => Promise.resolve(registered.get(channel)!(FROM_APP, ...args))

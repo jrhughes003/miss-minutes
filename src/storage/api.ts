@@ -12,7 +12,12 @@ import { readSettings, writeSettings, type Settings } from '../core/settings'
 import { ValidationError } from '../core/tasks/normalize'
 import { TaskService } from '../core/tasks/service'
 import type { NewTask, Project, Task, TaskPatch, TaskQuery } from '../core/tasks/types'
+import type { CalendarEvent } from '../core/today'
+import { toLocalDate } from '../core/time'
+import { UNAVAILABLE_GOOGLE, type GoogleStatus } from '../shared/google'
 import { decodeIpcError, type MissMinutesApi, type PushEvents } from '../shared/ipc'
+import { fakeEventsBetween } from '../demo/fakeCalendar'
+import { DEMO_SEEDED_KEY, seedDemo } from '../demo/seed'
 import { LocalReminderLog } from './localReminderLog'
 import { LocalTaskRepo, memoryStorage, type KeyValueStorage } from './localRepo'
 import { bridge } from './runtime'
@@ -45,6 +50,21 @@ export interface DataApi {
     get(): Promise<Settings>
     set(patch: Partial<Settings>): Promise<Settings>
   }
+  calendar: {
+    /** Events overlapping the local dates [from, to], inclusive. */
+    events(from: string, to: string): Promise<CalendarEvent[]>
+  }
+  /** Google connection (desktop only; the web build reports it unavailable). */
+  google: {
+    status(): Promise<GoogleStatus>
+    importClient(json: string): Promise<GoogleStatus>
+    connect(): Promise<GoogleStatus>
+    disconnect(): Promise<GoogleStatus>
+    setCalendar(id: string, selected: boolean): Promise<GoogleStatus>
+    syncNow(): Promise<GoogleStatus>
+  }
+  /** True in the hosted web demo: sample data and a generated calendar. */
+  isDemo: boolean
   /** Called after any change, from this window or (desktop) the main process. */
   onChange(listener: (scope: ChangeScope) => void): () => void
   /** Called when the user clicks a reminder notification. */
@@ -106,6 +126,16 @@ export function createIpcApi(b: MissMinutesApi): DataApi {
       get: () => call(b.invoke('settings:get')),
       set: (patch) => call(b.invoke('settings:set', patch)),
     },
+    calendar: { events: (from, to) => call(b.invoke('calendar:events', from, to)) },
+    google: {
+      status: () => call(b.invoke('google:status')),
+      importClient: (json) => call(b.invoke('google:importClient', json)),
+      connect: () => call(b.invoke('google:connect')),
+      disconnect: () => call(b.invoke('google:disconnect')),
+      setCalendar: (id, selected) => call(b.invoke('google:setCalendar', id, selected)),
+      syncNow: () => call(b.invoke('google:syncNow')),
+    },
+    isDemo: false,
     onChange: (listener) => b.on('data:changed', (e) => listener(e.scope)),
     onReminderOpen: (listener) => b.on('reminder:open', listener),
   }
@@ -130,6 +160,8 @@ export interface LocalApiOptions {
   notifier?: Notifier
   /** Check for due reminders on this interval (ms); 0 disables the timer (tests call tick themselves). */
   tickMs?: number
+  /** Demo mode: show the generated fake calendar. */
+  demo?: boolean
 }
 
 export function createLocalApi(storage: KeyValueStorage, options: LocalApiOptions = {}): DataApi & { tickReminders: () => void } {
@@ -206,6 +238,18 @@ export function createLocalApi(storage: KeyValueStorage, options: LocalApiOption
       get: () => read(() => readSettings(settingsStore)),
       set: (patch) => write('settings', () => writeSettings(settingsStore, patch)),
     },
+    calendar: {
+      events: (from, to) => read(() => (options.demo ? fakeEventsBetween(toLocalDate(clock.now(), clock.zone()), clock.zone(), from, to) : [])),
+    },
+    google: {
+      status: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+      importClient: () => Promise.reject(new AppError('Google Calendar is available in the desktop app.')),
+      connect: () => Promise.reject(new AppError('Google Calendar is available in the desktop app.')),
+      disconnect: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+      setCalendar: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+      syncNow: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+    },
+    isDemo: Boolean(options.demo),
     onChange(listener) {
       listeners.add(listener)
       return () => void listeners.delete(listener)
@@ -227,7 +271,24 @@ function defaultApi(): DataApi {
   } catch {
     storage = memoryStorage()
   }
-  return createLocalApi(storage, { notifier: browserNotifier, tickMs: 30_000 })
+  const demo = import.meta.env.VITE_DEMO_MODE === '1'
+  const local = createLocalApi(storage, { notifier: browserNotifier, tickMs: 30_000, demo })
+  if (demo && storage.getItem(DEMO_SEEDED_KEY) === null) {
+    // Mark first, so a failure part-way never seeds twice on reload.
+    storage.setItem(DEMO_SEEDED_KEY, new Date().toISOString())
+    void seedDemo(local, toLocalDate(new Date(), systemClock.zone())).catch((e: unknown) => console.error('Miss Minutes: demo seeding failed', e))
+  }
+  return local
+}
+
+/** Clears everything the web build stored (demo reset). */
+export function clearLocalData(storage: Storage): void {
+  const keys: string[] = []
+  for (let i = 0; i < storage.length; i++) {
+    const k = storage.key(i)
+    if (k?.startsWith('miss-minutes:')) keys.push(k)
+  }
+  keys.forEach((k) => storage.removeItem(k))
 }
 
 export const api: DataApi = typeof window === 'undefined' ? createLocalApi(memoryStorage()) : defaultApi()
