@@ -335,7 +335,7 @@ committed, with PROGRESS.md updated.
 | M8 | Google Tasks two-way sync | project ↔ list mapping, 3-way merge, outbox, sync panel; merge property tests | L |
 | M9 | Calendar write + 📱 reminders | staged write consent, "Miss Minutes" calendar, idempotent create/edit, confirm sheet, undo; phone check | M |
 | M10 | AI: plan my day + eval | free-slot finder, greedy planner, plan prompt, apply flow; plan eval (§5.2); validator written as a teaching module (D25) | L |
-| M11 | Polish + release | README (with "How this was built"), screenshots/GIF, installer, v1.0.0 tag, LinkedIn write-up | M |
+| M11 | Polish + release | the D33 visual identity pass (retro-futurist, original art), README (with "How this was built"), screenshots/GIF, installer, v1.0.0 tag, LinkedIn write-up | M |
 
 That is roughly 40–55 sittings in total. **M0–M4 is already a useful local app**: tasks,
 reliable reminders and a Today view.

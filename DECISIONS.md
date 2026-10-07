@@ -494,3 +494,39 @@ D13 stands as written, with three additions. M8 is no longer blocked.
 - **Not yet verified:** a sign-in against the real Google service. That's the owner's check,
   using the steps in the README.
 
+### D33. Visual direction: the retro-futurist "TVA" look from Loki (user, 2026-10-06; not yet built)
+- **The ask:** the UI should feel like the technology in the *Loki* TV series, which is what
+  inspired the name.
+- **What that style is, in design terms:** 1970s retro-futurist bureaucratic tech.
+  - Warm amber / orange-on-dark phosphor screens with a slight CRT glow and scanline texture.
+  - Chunky, boxy beige-and-brown hardware panels with bevelled edges.
+  - Monospaced or condensed "terminal" type for data, with a friendlier display face for
+    headings.
+  - Analog clock motifs.
+  - "Timeline" visuals, which suit the Today schedule well.
+  - Stamped labels and case-file styling for task cards.
+  - Mechanical feedback (dials, toggles) for settings.
+- **How it maps onto the app:**
+  - The Today timeline becomes the centrepiece "timeline".
+  - Reminders arrive as "dispatches".
+  - Overdue items get a red "variance" treatment.
+  - A dark amber theme is the default, with a light "office paper" theme as the alternative.
+- **Constraints (non-negotiable for a public portfolio repo):**
+  - **No Marvel/Disney assets.** No screenshots, logos or fonts taken from the show, and no
+    likeness of the Miss Minutes character. Evoke the *style* with original art only. The clock
+    icon in `build/` is already original.
+  - **Accessibility still wins:** WCAG AA contrast in both themes. CRT effects are decoration
+    only, are subtle, and are switched off under `prefers-reduced-motion` and in high-contrast
+    mode. axe checks keep running on every screen.
+- **Risk to decide before the public v1 (M11):** "Miss Minutes" is the name of a Marvel
+  character. Using it as the name of a published app could draw a trademark complaint. The name
+  was chosen "for now" (D1). Options:
+  - keep it for the private build only, and publish under a different name;
+  - pick a nod-but-distinct name;
+  - accept the risk knowingly.
+  Renaming is cheap until the first public release. After that, the installed app's data folder
+  is tied to `productName` (see CLAUDE.md).
+- **When:** a "visual identity" pass, planned as part of M11 (polish), or as its own short
+  milestone before M11 if the owner prefers. Tokens in `src/styles.css` are already centralised,
+  so most of the restyle is a theme swap plus a few components.
+

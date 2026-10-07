@@ -22,6 +22,9 @@ export function GoogleSettings() {
   const [busy, setBusy] = useState<null | 'import' | 'connect' | 'disconnect' | 'sync'>(null)
   const [error, setError] = useState<string | null>(null)
   const [confirmDisconnect, setConfirmDisconnect] = useState(false)
+  // The user's latest choice per calendar, shown immediately while the main
+  // process applies it, so a click never looks ignored. Reverted on failure.
+  const [chosen, setChosen] = useState<Record<string, boolean>>({})
 
   if (!status) return null
   if (!status.available) {
@@ -112,9 +115,19 @@ export function GoogleSettings() {
                   <label className="check-row">
                     <input
                       type="checkbox"
-                      checked={c.selected}
+                      checked={chosen[c.id] ?? c.selected}
                       disabled={!c.readable || busy !== null}
-                      onChange={(e) => run('sync', () => api.google.setCalendar(c.id, e.target.checked))}
+                      onChange={(e) => {
+                        const selected = e.target.checked
+                        setChosen((prev) => ({ ...prev, [c.id]: selected }))
+                        void api.google.setCalendar(c.id, selected).then(
+                          () => setError(null),
+                          (err: unknown) => {
+                            setChosen(({ [c.id]: _dropped, ...rest }) => rest)
+                            setError(toAppError(err).message)
+                          },
+                        )
+                      }}
                     />
                     <span className="dot" style={{ background: c.color ?? 'var(--p3)' }} aria-hidden="true" />
                     {c.summary}

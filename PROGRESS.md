@@ -120,27 +120,31 @@ asked about, so here are short walkthroughs of those:
      fall-back hour can't produce a second key, so neither can produce a second notification.
 
 ## Current state (2026-10-06, second autonomous session)
-- M0–M4 are committed and pushed by you.
-- **M5 (Google sign-in + Calendar read) is built and fully tested against a local fake Google
-  server.** All checks pass on the full working tree:
-  - 238 unit tests and coverage thresholds;
-  - end-to-end runs: web 4, demo 3, desktop 5 (one of them the Google flow, one the
-    rebuilt packaged app).
-- **Commit 10 (the M5 code) needs committing and pushing.** Until then, the pushed commit
-  `77f5034` doesn't build on GitHub, because it already references the M5 files. See
-  "Suggested commits".
-- **Not yet done, and only you can do it:** a real sign-in against Google, using the README's
-  "Connecting Google Calendar" steps and your client file.
-- Paused here at your request, so you can commit. Nothing else is being changed.
+- M0–M5 are committed and pushed (through `2f81f5b`). M5 has been tested against a fake Google
+  server only; a real sign-in is still your check.
+- **Two problems found after the push, both now explained:**
+  1. **CI "Desktop end-to-end" failed** in the Google test. It was a real UI bug: the calendar
+     checkboxes only changed after a round trip to the main process, so a click briefly looked
+     ignored (and Playwright saw no change). **Fixed** with optimistic checkboxes that revert if
+     the change fails. Verified with the full desktop suite (5/5) and the Google test three times
+     in a row. In the previous session I misread a "4 passed" summary that also had this
+     failure; I now check the failed count explicitly.
+  2. **The Pages site is black/empty.** Pages is set to **"Deploy from a branch"**, so GitHub
+     serves the repository's *source* `index.html`, which loads `./src/main.tsx`, and browsers
+     can't run that. The "Deploy demo" workflow *did* build and deploy the real demo
+     successfully, but that isn't what Pages is serving. **Fix (you, one minute):**
+     repository **Settings → Pages → Build and deployment → Source: "GitHub Actions"**, then
+     re-run the latest "Deploy demo" workflow from the Actions tab.
+- D33 records the Loki/TVA-inspired visual direction (to build in M11), with an IP caution about
+  the name.
+- Working on: M6 (natural-language capture with the mock AI server, plus the parse eval
+  harness). No paid API calls.
 
 ## Next up
-1. **You:** commit and push commit 10, then commit 11 (docs). Then check that the "Deploy demo"
-   workflow publishes https://jrhughes003.github.io/miss-minutes/ and that CI is green.
-2. **You:** publish the OAuth consent screen with homepage https://jrhughes003.github.io/miss-minutes/
-   and privacy policy https://jrhughes003.github.io/miss-minutes/privacy.html (D29). Then try a
-   real connect from the desktop app (`npm run electron:dev`, or reinstall from `release\`).
-3. **Next session:** M6 (natural-language capture plus the parse eval). Live Claude runs need
-   your API key and cost approval; everything else uses the mock server.
+1. **You:** commit 12 (below) and push; change the Pages source (above) and re-run "Deploy demo".
+2. M6: the AI client, the payload allow-list, the usage log, the mock server, capture UI, and
+   the parse-eval case set and grader (a teaching module, D25). The deterministic baseline is
+   measured; the Claude run waits for your key and your OK on cost.
 
 ## Open questions for owner
 - ~~D13 (the Google Tasks merge rules)~~ Decided on 2026-10-06 in D31. M8 is unblocked.
@@ -186,43 +190,23 @@ asked about, so here are short walkthroughs of those:
   electron-builder's tools were cached inside the project (`node_modules/.cache`).
 
 ## Suggested commits (in order; nothing is staged or committed)
-Commits 1–9 are yours (through `77f5034`). Pushing commits 10 and 11 together is fine: CI and
-Pages build only the final pushed state.
+Commits 1–11 are yours (through `2f81f5b`).
 
-10. **Connect Google Calendar read-only, tested against a fake Google server** (**urgent**:
-    makes `77f5034` build again)
+12. **Make calendar checkboxes respond immediately**
     ```powershell
-    git add -- electron/db/migrations.ts src/core/recurrence.ts src/core/today.ts src/ui/SettingsView.tsx src/ui/GoogleSettings.tsx src/shared/google.ts src/core/calendar electron/google e2e-electron/google.spec.ts
+    git add -- src/ui/GoogleSettings.tsx DECISIONS.md PLAN.md PROGRESS.md
     ```
     ```
-    Connect Google Calendar read-only, tested against a fake Google server
+    Make calendar checkboxes respond immediately
 
-    Sign-in uses the loopback redirect with PKCE; the OAuth client and
-    tokens are stored encrypted with safeStorage and never reach the
-    renderer. A refresh failure (revoked access, or the 7-day Testing-mode
-    limit) becomes a clear "reconnect" state. Selected calendars are
-    refetched for a window from 7 days back to 60 ahead, with Google
-    expanding repeats, and shown on Today. Rate limits back off
-    exponentially with jitter.
+    Choosing which Google calendars to show waited for a round trip to the
+    main process before the checkbox changed, so a click briefly looked
+    ignored. That is what failed CI's desktop test. The box now flips at
+    once and reverts with an error if the change fails.
 
-    Every test runs against a local fake Google server that checks PKCE,
-    scopes, single-use codes, paging and revocation; nothing in the test
-    suite contacts Google.
-
-    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-    ```
-11. **Document the Google connection**
-    ```powershell
-    git add -- DECISIONS.md README.md PROGRESS.md
-    ```
-    ```
-    Document the Google connection
-
-    README gains the five-step setup for your own OAuth client. D32
-    records how the connection is built: encrypted secrets with no
-    plain-text fallback, disconnect deleting all cached calendar data,
-    default calendar selection, the sync schedule, and the fake-server
-    test strategy.
+    DECISIONS.md gains D33, the Loki-inspired retro-futurist visual
+    direction planned for M11, with a note on keeping it to original art
+    and on the trademark risk in the app's name.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
@@ -241,12 +225,14 @@ Pages build only the final pushed state.
 | M8 | Google Tasks two-way sync | L | ☐ (rules decided in D31) |
 | M9 | Calendar write + 📱 phone reminders | M | ☐ |
 | M10 | AI: plan my day + eval (validator is a teaching module) | L | ☐ |
-| M11 | Polish, README, v1.0.0 release | M | ☐ |
+| M11 | Polish, README, v1.0.0 release (includes the D33 visual identity pass) | M | ☐ |
 
 ## Explain-it-back log
 Record each milestone's questions here once you can answer them without notes (questions are
 in the session report above and in PLAN.md §7).
 
 ## Parking lot
+- D33 visual identity pass (Loki/TVA-inspired retro-futurism, original art only). Also decide
+  on the app name before the public v1.
 - Native Windows toast buttons (snooze in the toast itself, via `toastXml`): post-v1 (D14).
 - A "quiet hours" setting (D6 left it optional).
