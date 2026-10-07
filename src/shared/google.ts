@@ -20,6 +20,32 @@ export interface GoogleStatus {
   lastSync: string | null
   lastError: string | null
   calendars: CalendarSummary[]
+  tasks: TasksSyncStatus
+  phone: PhoneRemindersStatus
+}
+
+export interface PhoneRemindersStatus {
+  enabled: boolean
+  /** The grant includes calendar.app.created (a one-time re-consent). */
+  scopeGranted: boolean
+  /** Ready to use: on, permitted, and connected. */
+  active: boolean
+}
+
+export interface TasksSyncLogEntry {
+  at: string
+  kind: string
+  title: string
+  detail: string
+}
+
+export interface TasksSyncStatus {
+  /** The user's choice in Settings. */
+  enabled: boolean
+  /** Whether the Google grant includes Tasks access (needs a one-time re-consent). */
+  scopeGranted: boolean
+  lastSync: string | null
+  log: TasksSyncLogEntry[]
 }
 
 export const UNAVAILABLE_GOOGLE: GoogleStatus = {
@@ -31,4 +57,6 @@ export const UNAVAILABLE_GOOGLE: GoogleStatus = {
   lastSync: null,
   lastError: null,
   calendars: [],
+  tasks: { enabled: false, scopeGranted: false, lastSync: null, log: [] },
+  phone: { enabled: false, scopeGranted: false, active: false },
 }

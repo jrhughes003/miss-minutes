@@ -24,6 +24,7 @@ import { registerIpcHandlers, type Handlers } from './ipc'
 import { CalendarStore } from './google/calendarStore'
 import { GOOGLE_ENDPOINTS, type GoogleEndpoints } from './google/oauth'
 import { sqliteSecretStore } from './google/secrets'
+import { TasksSyncStore } from './google/tasksSyncStore'
 import { GoogleService } from './google/service'
 import { startReminderService } from './reminders'
 import { applySessionSecurity, applyWindowSecurity } from './security'
@@ -142,6 +143,16 @@ function start(): void {
     clock: systemClock,
     openBrowser,
     onChange: () => push('data:changed', { scope: 'calendar' }),
+    settings: settingsStore,
+    tasks,
+    tasksStore: new TasksSyncStore(db),
+    onTasksChanged: () => {
+      push('data:changed', { scope: 'tasks' })
+      push('data:changed', { scope: 'projects' })
+    },
+    tasksDebounceMs: Number(process.env.MISS_MINUTES_TASKS_DEBOUNCE_MS) || undefined,
+    db,
+    allDayTime: () => readSettings(settingsStore).allDayReminderTime,
   })
   // Sync every few minutes, and when the window gains focus (at most once a minute).
   const syncTimer = setInterval(() => void google.sync(), GOOGLE_SYNC_MS)
@@ -171,6 +182,8 @@ function start(): void {
       push('data:changed', e)
       // A new or moved reminder might already be due; don't wait for the next tick.
       if (e.scope === 'tasks') reminders.engine.tick()
+      // And Google Tasks should hear about it soon.
+      google.scheduleTasksSync()
     }),
     'reminders:active': () => reminders.engine.active(),
     'reminders:act': (ruleId, occurrenceLocal, action) => {
@@ -183,6 +196,8 @@ function start(): void {
     'google:connect': () => google.connect(),
     'google:disconnect': () => google.disconnect(),
     'google:setCalendar': (id, selected) => google.setCalendar(id, selected),
+    'google:setTasksSync': (enabled) => google.setTasksSync(enabled),
+    'google:setPhoneReminders': (enabled) => google.setPhoneReminders(enabled),
     'google:syncNow': async () => {
       await google.sync()
       return google.status()

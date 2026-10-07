@@ -14,6 +14,8 @@ interface Props {
   hasTime: boolean
   defaultDate: string
   error?: string | undefined
+  /** Phone reminders are set up (desktop, Google connected, permitted). */
+  phoneAvailable?: boolean
 }
 
 /** In the browser, ask for notification permission the first time a reminder is added (a user gesture), never on page load. */
@@ -22,7 +24,7 @@ function askBrowserPermission() {
   if (Notification.permission === 'default') void Notification.requestPermission()
 }
 
-export function ReminderField({ value, onChange, hasDue, hasTime, defaultDate, error }: Props) {
+export function ReminderField({ value, onChange, hasDue, hasTime, defaultDate, error, phoneAvailable = false }: Props) {
   const id = useId()
   const [choice, setChoice] = useState('')
   const [date, setDate] = useState(defaultDate)
@@ -51,6 +53,13 @@ export function ReminderField({ value, onChange, hasDue, hasTime, defaultDate, e
           {value.map((r, i) => (
             <li key={r.id ?? `new-${i}`}>
               <span>{describeReminder(r, hasTime)}</span>
+              {phoneAvailable && (
+                <label className="check-row phone-toggle">
+                  <input type="checkbox" checked={Boolean(r.phone)} onChange={(e) => onChange(value.map((x, j) => (j === i ? { ...x, phone: e.target.checked } : x)))} />
+                  <span aria-hidden="true">📱</span>
+                  <span className="visually-hidden">Also on my phone: {describeReminder(r, hasTime)}</span>
+                </label>
+              )}
               <button type="button" className="ghost" onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label={`Remove reminder: ${describeReminder(r, hasTime)}`}>
                 Remove
               </button>

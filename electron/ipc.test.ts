@@ -32,6 +32,8 @@ function setup() {
     'google:disconnect': () => UNAVAILABLE_GOOGLE,
     'google:setCalendar': () => UNAVAILABLE_GOOGLE,
     'google:syncNow': () => UNAVAILABLE_GOOGLE,
+    'google:setTasksSync': () => UNAVAILABLE_GOOGLE,
+    'google:setPhoneReminders': () => UNAVAILABLE_GOOGLE,
     'ai:status': () => UNAVAILABLE_AI,
     'ai:setKey': () => UNAVAILABLE_AI,
     'ai:clearKey': () => UNAVAILABLE_AI,

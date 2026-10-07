@@ -61,6 +61,8 @@ export interface IpcContract {
   'google:disconnect': { args: []; result: GoogleStatus }
   'google:setCalendar': { args: [id: string, selected: boolean]; result: GoogleStatus }
   'google:syncNow': { args: []; result: GoogleStatus }
+  'google:setTasksSync': { args: [enabled: boolean]; result: GoogleStatus }
+  'google:setPhoneReminders': { args: [enabled: boolean]; result: GoogleStatus }
 
   'ai:status': { args: []; result: AiStatus }
   /** Stored encrypted; never returned to the renderer. */
@@ -105,6 +107,8 @@ const CHANNEL_SET: Record<Channel, true> = {
   'google:disconnect': true,
   'google:setCalendar': true,
   'google:syncNow': true,
+  'google:setTasksSync': true,
+  'google:setPhoneReminders': true,
   'ai:status': true,
   'ai:setKey': true,
   'ai:clearKey': true,

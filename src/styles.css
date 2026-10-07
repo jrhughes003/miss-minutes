@@ -259,3 +259,8 @@ fieldset.field { border: 0; padding: 0; margin: 0 0 10px; }
 .suggest-steps { margin: 8px 0; }
 .suggestions { border: 1px dashed var(--accent); border-radius: var(--radius); padding: 8px 10px; margin: 6px 0; display: grid; gap: 4px; }
 .suggestions legend { font-weight: 600; font-size: 0.9rem; padding: 0 4px; }
+
+.sync-log ul { margin: 6px 0; padding-left: 1.2em; font-size: 0.88rem; display: grid; gap: 4px; }
+.sync-log summary { cursor: pointer; color: var(--text-muted); }
+
+.phone-toggle { margin-left: auto; margin-right: 6px; }

@@ -32,6 +32,9 @@ export interface GoogleEvent {
   originalStartTime?: GoogleEventTime
   htmlLink?: string
   transparency?: 'opaque' | 'transparent'
+  description?: string
+  reminders?: { useDefault: boolean; overrides?: { method: 'popup' | 'email'; minutes: number }[] }
+  extendedProperties?: { private?: Record<string, string> }
 }
 
 export interface GoogleCalendarListEntry {

@@ -132,6 +132,71 @@ export function GoogleSettings() {
             </p>
           </li>
         )}
+        {status.connected && (
+          <li>
+            <strong>Google Tasks.</strong>
+            <OptimisticToggle
+              checked={status.tasks.enabled}
+              disabled={busy !== null}
+              onChange={(enabled) => api.google.setTasksSync(enabled).then(() => setError(null))}
+              onError={(err) => setError(toAppError(err).message)}
+            >
+              Sync my tasks with Google Tasks, both ways
+            </OptimisticToggle>
+            <p className="hint">
+              Titles, notes, due dates and done/not done sync both ways; priorities, tags, times of day, reminders and repeats stay here.
+              Projects sync to Google lists of the same name, the Inbox to “My Tasks”. Only open tasks are sent across the first time.
+            </p>
+            {status.tasks.enabled && !status.tasks.scopeGranted && (
+              <p>
+                <button type="button" className="primary" disabled={busy !== null} onClick={() => run('connect', () => api.google.connect())}>
+                  Allow Google Tasks access
+                </button>{' '}
+                <span className="hint">Google will ask you to approve access to your tasks once.</span>
+              </p>
+            )}
+            {status.tasks.enabled && status.tasks.scopeGranted && (
+              <p className="hint">Tasks last synced {ago(status.tasks.lastSync)}.</p>
+            )}
+            {status.tasks.log.length > 0 && (
+              <details className="sync-log">
+                <summary>Sync log ({status.tasks.log.length})</summary>
+                <ul>
+                  {status.tasks.log.map((l, i) => (
+                    <li key={`${l.at}-${i}`}>
+                      <span className="muted">{new Date(l.at).toLocaleString()}</span> <strong>{l.title}</strong>: {l.detail}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </li>
+        )}
+        {status.connected && (
+          <li>
+            <strong>Phone reminders.</strong>
+            <OptimisticToggle
+              checked={status.phone.enabled}
+              disabled={busy !== null}
+              onChange={(enabled) => api.google.setPhoneReminders(enabled).then(() => setError(null))}
+              onError={(err) => setError(toAppError(err).message)}
+            >
+              Send reminders I mark 📱 to my phone
+            </OptimisticToggle>
+            <p className="hint">
+              Each 📱 reminder becomes a short event, with an alert, on a separate “Miss Minutes reminders” calendar, so your phone notifies you even when this PC is off.
+              Miss Minutes can only create and change events on that one calendar.
+            </p>
+            {status.phone.enabled && !status.phone.scopeGranted && (
+              <p>
+                <button type="button" className="primary" disabled={busy !== null} onClick={() => run('connect', () => api.google.connect())}>
+                  Allow phone reminders
+                </button>{' '}
+                <span className="hint">Google will ask once to let Miss Minutes create its own calendar.</span>
+              </p>
+            )}
+          </li>
+        )}
       </ol>
 
       {(error ?? status.lastError) && (

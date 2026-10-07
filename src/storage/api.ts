@@ -66,6 +66,8 @@ export interface DataApi {
     disconnect(): Promise<GoogleStatus>
     setCalendar(id: string, selected: boolean): Promise<GoogleStatus>
     syncNow(): Promise<GoogleStatus>
+    setTasksSync(enabled: boolean): Promise<GoogleStatus>
+    setPhoneReminders(enabled: boolean): Promise<GoogleStatus>
   }
   ai: {
     status(): Promise<AiStatus>
@@ -160,6 +162,8 @@ export function createIpcApi(b: MissMinutesApi): DataApi {
       disconnect: () => call(b.invoke('google:disconnect')),
       setCalendar: (id, selected) => call(b.invoke('google:setCalendar', id, selected)),
       syncNow: () => call(b.invoke('google:syncNow')),
+      setTasksSync: (enabled) => call(b.invoke('google:setTasksSync', enabled)),
+      setPhoneReminders: (enabled) => call(b.invoke('google:setPhoneReminders', enabled)),
     },
     isDemo: false,
     onChange: (listener) => b.on('data:changed', (e) => listener(e.scope)),
@@ -308,6 +312,8 @@ export function createLocalApi(storage: KeyValueStorage, options: LocalApiOption
       disconnect: () => Promise.resolve(UNAVAILABLE_GOOGLE),
       setCalendar: () => Promise.resolve(UNAVAILABLE_GOOGLE),
       syncNow: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+      setTasksSync: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+      setPhoneReminders: () => Promise.resolve(UNAVAILABLE_GOOGLE),
     },
     isDemo: Boolean(options.demo),
     onChange(listener) {

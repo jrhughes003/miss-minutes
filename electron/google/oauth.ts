@@ -40,6 +40,16 @@ export const CALENDAR_READ_SCOPES = [
   'https://www.googleapis.com/auth/calendar.events.readonly',
 ] as const
 
+/** Two-way Google Tasks sync (M8, D10). Requested only once the user turns Tasks sync on. */
+export const TASKS_SCOPE = 'https://www.googleapis.com/auth/tasks'
+
+/**
+ * Phone reminders (M9): lets the app create its own "Miss Minutes" calendar
+ * and manage events on that calendar only. It grants nothing on the user's
+ * other calendars (D10, D37).
+ */
+export const APP_CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.app.created'
+
 export interface OAuthClient {
   clientId: string
   clientSecret: string

@@ -22,8 +22,12 @@ export interface SyncResult {
   events: number
 }
 
-export async function syncCalendars(api: GoogleApi, store: CalendarStore, now: Date, zone: string): Promise<SyncResult> {
-  store.updateCalendars(await api.listCalendars())
+/**
+ * `exclude` lists calendars never to show, such as the app's own phone-reminder
+ * calendar, whose events would only duplicate reminders already on Today.
+ */
+export async function syncCalendars(api: GoogleApi, store: CalendarStore, now: Date, zone: string, exclude: string[] = []): Promise<SyncResult> {
+  store.updateCalendars((await api.listCalendars()).filter((c) => !exclude.includes(c.id)))
 
   const today = toLocalDate(now, zone)
   const timeMin = startOfLocalDay(addDays(today, -WINDOW_DAYS_BEFORE), zone)

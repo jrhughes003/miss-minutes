@@ -47,6 +47,7 @@ export function TaskEditor({ taskId, projects, onClose }: { taskId: string; proj
   const today = useToday()
   const { data: task } = useLive((a) => a.tasks.get(taskId), [taskId], ['tasks'])
   const { data: subtasks = [] } = useLive((a) => a.tasks.subtasks(taskId), [taskId], ['tasks'])
+  const { data: google } = useLive((a) => a.google.status(), [], ['calendar'])
   const [draft, setDraft] = useState<Draft | null>(null)
   const [error, setError] = useState<AppError | null>(null)
   const [saved, setSaved] = useState(false)
@@ -196,6 +197,7 @@ export function TaskEditor({ taskId, projects, onClose }: { taskId: string; proj
           hasTime={Boolean(draft.dueTime)}
           defaultDate={draft.dueDate || today}
           error={fieldError('reminders')}
+          phoneAvailable={Boolean(google?.phone.active)}
         />
 
         <div className="field">
