@@ -27,7 +27,8 @@
     "electron": "npm run build && node scripts/build-electron.mjs && node scripts/run-electron.mjs",
     "eval:parse": "node scripts/run-eval.mjs eval/parse/run.ts",
     "ai:mock": "node scripts/run-eval.mjs electron/ai/mockMain.ts",
-    "eval:breakdown": "node scripts/run-eval.mjs eval/breakdown/run.ts"
+    "eval:breakdown": "node scripts/run-eval.mjs eval/breakdown/run.ts",
+    "eval:plan": "node scripts/run-eval.mjs eval/plan/run.ts"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

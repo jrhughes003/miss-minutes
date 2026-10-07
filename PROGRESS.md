@@ -119,29 +119,66 @@ asked about, so here are short walkthroughs of those:
    - **Key by wall-clock time** (`rule|2026-10-08T13:15`). A zone change or the repeated
      fall-back hour can't produce a second key, so neither can produce a second notification.
 
-## Current state (2026-10-07)
-- M0–M6 are committed and pushed. **CI is green on GitHub, and the live demo works:**
-  https://jrhughes003.github.io/miss-minutes/ (privacy page at `/privacy.html`). You can now
-  publish the OAuth consent screen (D29).
-- **M7 (task breakdown) is built.** All checks pass:
-  - 308 unit tests and coverage thresholds;
-  - end-to-end: web 4/4, demo 5/5, desktop 6/6 (the AI test now also covers "Suggest steps"
-    against the mock server; the packaged app was rebuilt).
-- **Evals waiting for your key and your OK on cost (no paid calls made by me):**
-  ```powershell
-  cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-  $env:ANTHROPIC_API_KEY = "<your key>"
-  npm run eval:parse -- --system claude --split dev --accept-cost     # about $0.20
-  npm run eval:breakdown -- --accept-cost                               # about $0.04, then rate the 20 in the sheet
-  ```
-- Still yours: a real Google sign-in from the desktop app.
+## Current state (2026-10-07, autonomous session while you're away)
+- M0–M7 are committed and pushed; CI is green, the live demo works, and the OAuth app is in
+  production.
+- **M8 (Google Tasks two-way sync) and M9 (📱 phone reminders) are built**, both tested against
+  the fake Google server. All checks pass:
+  - 352 unit tests and coverage thresholds;
+  - end-to-end: web 4/4, demo 5/5, desktop 8/8 (including the Tasks sync and phone-reminder
+    flows; the packaged app was rebuilt).
+- **Tasks sync:**
+  - 16 rule tests, 17 integration tests, and a randomized two-sided convergence test (150
+    scenarios per run; a 500-scenario run passed);
+  - the tests caught one real bug, an outbox that matched by time across two clocks. It's fixed
+    (D36).
+- **Phone reminders:** each 📱 reminder becomes an event with a popup on the app's own "Miss
+  Minutes reminders" calendar, using only the narrow `calendar.app.created` scope. Writes are
+  idempotent and tested never to touch other calendars (D37).
+- **Your part before real use:**
+  1. enable the **Google Tasks API**;
+  2. on the consent screen's Data access page, add the scopes `.../auth/tasks` and
+     `.../auth/calendar.app.created`;
+  3. in the app, turn each feature on and click its "Allow" button (README);
+  4. check that a 📱 reminder actually alerts your phone.
+- Still waiting on your key and your OK on cost: the Claude parse and breakdown evals.
+- **M10 groundwork is done, in new files only** (so commits 18–20 stay valid):
+  - the free-time finder;
+  - the greedy planner;
+  - the **plan validator**, the second former-D21 teaching module (walkthrough below);
+  - a frozen 200-day plan eval.
+  Greedy baseline: 0 % violations, 99.1 % of due-today tasks scheduled, 100 % of overloaded
+  days handled (`eval/results/plan-greedy-2026-10-07.md`). 368 unit tests pass.
+
+### Walkthrough: the plan validator (`src/core/plan/validate.ts`)
+It decides whether a proposed day plan is *possible*, whoever proposed it.
+- **Everything is interval arithmetic** on instants, with one test at the core: two half-open
+  intervals [a1, a2) and [b1, b2) overlap exactly when a1 < b2 and b1 < a2. Touching ends
+  (one block ending at 11:00 and the next starting at 11:00) are fine.
+- **Each block is checked against the rules in turn:**
+  - a real task, used once;
+  - at least 15 minutes long;
+  - inside the planning window and not before now;
+  - not overlapping busy time (busy intervals are merged first);
+  - finished by the deadline (the due time, or the end of the due day);
+  - at most estimate × 1.25 (floored at 15 minutes).
+- **Then the plan as a whole:** blocks are sorted by start, so overlapping blocks can only be
+  neighbours and one pass finds them. Every candidate must be scheduled or listed as
+  unscheduled, so nothing silently disappears.
+- **Why measure violations when the app blocks them anyway?** Because the rate shows how
+  trustworthy the model's planning really is. PLAN §5.2 sets ≤ 5 % before validation and 0 %
+  after it.
+- **The tests read as its specification:** one test per rule, a DST-day test, and a property
+  test proving the greedy planner never trips it.
 
 ## Next up
-1. **You:** commits 16–17 below, then push.
-2. **M8 (Google Tasks two-way sync, D13/D31)** is next. It's large and built like M5:
-   - test it against a fake Google Tasks server first;
-   - it needs the `tasks` scope, so you'll re-consent once;
-   - and you'll need to enable the Tasks API in your Cloud project.
+1. **You:** commits 18–21 below, then push them together.
+2. **Next: M10 part 2:**
+   - the Claude plan prompt (free intervals only);
+   - the "Plan my day" UI with a proposed timeline;
+   - apply with confirmation and undo, which needs `calendar.events.owned` (re-consent once);
+   - the Claude plan eval (your key and OK).
+3. Then M11 (polish, the D33 visual identity, README, release).
 
 ## Open questions for owner
 - ~~D13 (the Google Tasks merge rules)~~ Decided on 2026-10-06 in D31. M8 is unblocked.
@@ -187,42 +224,91 @@ asked about, so here are short walkthroughs of those:
   electron-builder's tools were cached inside the project (`node_modules/.cache`).
 
 ## Suggested commits (in order; nothing is staged or committed)
-Commits 1–15 are yours (through `b1b9ade`). Push 16–17 together.
+Commits 1–17 are yours (through `081cd8d`). M8 and M9 share files, so these three are cut by
+layer and must be **pushed together** (commit 18 alone doesn't build). CI checks only the pushed
+head, which passed every check here.
 
-16. **Suggest concrete next steps for a vague task**
+18. **Add the Google Tasks sync engine**
     ```powershell
     cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- src/core/breakdown electron/ai/breakdown.ts electron/ai/breakdown.test.ts electron/ai/mockServer.ts electron/ai/service.ts electron/ipc.test.ts electron/main.ts src/shared/ai.ts src/shared/ipc.ts src/storage/api.ts src/styles.css src/ui/tasks/SuggestSteps.tsx src/ui/tasks/SuggestSteps.test.tsx src/ui/tasks/TaskEditor.tsx eval/breakdown package.json e2e-demo/demo.spec.ts e2e-electron/ai.spec.ts
+    git add -- src/core/sync electron/google/tasksSync.ts electron/google/tasksSyncStore.ts electron/google/tasksSync.test.ts electron/google/fakeGoogle.ts electron/google/api.ts electron/db/migrations.ts
     ```
     ```
-    Suggest concrete next steps for a vague task
+    Add the Google Tasks sync engine
 
-    "Suggest steps" in the task editor asks Claude to split a task like
-    "Move house" into three to seven concrete actions, shown as a checklist;
-    only the ticked ones become steps, and nothing is added before you
-    confirm. Without AI the app says why and leaves steps to you, rather
-    than inventing generic ones.
+    Each synced task keeps a snapshot of the fields both sides last agreed
+    on, and each sync merges field by field against it: a change made on
+    one side is taken, edits to different fields on both sides both
+    survive, and a same-field conflict keeps the local value and logs what
+    Google had (D31). A task deleted on one side is deleted on both unless
+    the other side edited it, in which case the edit is kept and the task
+    restored.
 
-    Only the task's title, notes (switchable), project and due date are
-    sent. Steps are checked in code before they are shown: verb first,
-    at most 80 characters, no numbering, no duplicates, and no dates the
-    task did not mention.
-
-    A frozen set of 40 vague tasks scores the same checks on raw output and
-    produces a sheet for hand-rating usefulness on 20 of them.
+    Changes are found with Google's own timestamps, so a skewed PC clock
+    cannot hide them, and uploads go through an outbox so an ambiguous
+    insert is matched to the task Google created rather than sent twice.
+    The rules are a pure module with property tests; the engine is tested
+    against a fake Google Tasks server, including a randomized run of edits
+    on both sides that must always converge.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
-17. **Record the breakdown decisions**
+19. **Turn on Tasks sync and phone reminders from Settings**
     ```powershell
     cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- DECISIONS.md PROGRESS.md
+    git add -- src/core/reminders/phone.ts src/core/reminders/phone.test.ts src/core/calendar/google.ts electron/google/phoneMirror.ts electron/google/phoneMirror.test.ts electron/google/calendarSync.ts electron/google/oauth.ts electron/google/service.ts electron/ipc.test.ts electron/main.ts src/shared/google.ts src/shared/ipc.ts src/storage/api.ts src/styles.css src/ui/GoogleSettings.tsx src/ui/tasks/ReminderField.tsx src/ui/tasks/TaskEditor.tsx e2e-electron/googleTasks.spec.ts e2e-electron/phone.spec.ts
     ```
     ```
-    Record the breakdown decisions
+    Turn on Tasks sync and phone reminders from Settings
 
-    D35: suggestions are proposals only, there is no fake fallback, what is
-    sent and how steps are checked, and the frozen 40-task eval.
+    Both are off until switched on, and each asks Google only for what it
+    needs, when it is needed: Tasks access for sync, and calendar.app.created
+    for phone reminders, which lets the app manage its own calendar and
+    nothing else.
+
+    A reminder marked with the phone switch becomes a short event with an
+    alert on a "Miss Minutes reminders" calendar, so the phone notifies even
+    when the PC is off. Event ids are derived from the reminder and its
+    occurrence, so a retry can never duplicate one; each sync creates,
+    updates and deletes until the calendar matches. That calendar is kept
+    out of Today and the calendar picker, and everything on it is removed
+    when phone reminders are turned off.
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    ```
+20. **Document Tasks sync and phone reminders**
+    ```powershell
+    cd C:\Users\jrhug\Documents\GitHub\miss-minutes
+    git add -- README.md
+    ```
+    ```
+    Document Tasks sync and phone reminders
+
+    README gains the setup steps for Tasks sync and phone reminders. (The
+    matching decisions, D36 and D37, are committed with the next commit,
+    which also carries DECISIONS.md and PROGRESS.md.)
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    ```
+21. **Lay the groundwork for plan my day: free time, a greedy planner and a validator**
+    ```powershell
+    cd C:\Users\jrhug\Documents\GitHub\miss-minutes
+    git add -- src/core/plan eval/plan eval/results/plan-greedy-2026-10-07.md package.json DECISIONS.md PROGRESS.md
+    ```
+    ```
+    Lay the groundwork for plan my day: free time, a greedy planner and a validator
+
+    Free time is the planning window minus merged busy time, and is all
+    plan-my-day will ever tell Claude about the calendar. The validator
+    defines a possible plan: real tasks once each, inside the window and
+    after now, clear of meetings and of each other, done by each deadline,
+    and not wildly over estimate; the app will refuse any plan it rejects.
+
+    The greedy planner (earliest deadline, then priority) is the fallback
+    and the baseline. On a frozen set of 200 generated days, including both
+    DST changes and 34 overloaded days, it breaks no rule, schedules 99.1 %
+    of due-today tasks and lists what it cannot fit. A property test over
+    1,000 random days confirms the validator never rejects its plans.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
@@ -238,9 +324,9 @@ Commits 1–15 are yours (through `b1b9ade`). Push 16–17 together.
 | M5 | Google sign-in + Calendar read | L | ✅ built and tested against a fake Google server; real sign-in check is yours |
 | M6 | AI: NL capture + parse eval (grader is a teaching module) | M | ✅ built; baseline measured; Claude run needs your key and OK |
 | M7 | AI: task breakdown | S | ✅ built; eval needs your key and OK |
-| M8 | Google Tasks two-way sync | L | ☐ (rules decided in D31) |
-| M9 | Calendar write + 📱 phone reminders | M | ☐ |
-| M10 | AI: plan my day + eval (validator is a teaching module) | L | ☐ |
+| M8 | Google Tasks two-way sync | L | ✅ built and tested against a fake server; real-account check is yours |
+| M9 | Calendar write + 📱 phone reminders | M | ✅ phone reminders built and tested against a fake server; real phone check is yours; own-calendar writes move to M10 |
+| M10 | AI: plan my day + eval (validator is a teaching module) | L | ⏳ part 1 done (core, validator, eval, greedy baseline); part 2 next |
 | M11 | Polish, README, v1.0.0 release (includes the D33 visual identity pass) | M | ☐ |
 
 ## Explain-it-back log
@@ -248,6 +334,10 @@ Record each milestone's questions here once you can answer them without notes (q
 in the session report above and in PLAN.md §7).
 
 ## Parking lot
+- The on-device parser leaves "remind me" in the title when it appears mid-sentence ("Dentist
+  tomorrow remind me 15 minutes before" gives the title "Dentist remind me"). The frozen eval
+  baseline must stay as it is, but the user-facing fallback could get a small fix (a separate
+  copy) in M11.
 - D33 visual identity pass (Loki/TVA-inspired retro-futurism, original art only). Also decide
   on the app name before the public v1.
 - Native Windows toast buttons (snooze in the toast itself, via `toastXml`): post-v1 (D14).

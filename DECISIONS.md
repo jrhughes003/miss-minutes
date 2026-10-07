@@ -589,3 +589,125 @@ D13 stands as written, with three additions. M8 is no longer blocked.
 - **Mock and demo:** the mock server and the web demo use the same generic, clearly labelled
   steps ("Suggested by simulated AI (no real model)").
 
+### D29 update (user, 2026-10-07)
+The OAuth app is now **In production** (unverified). Its homepage is
+https://jrhughes003.github.io/miss-minutes/ and its privacy policy is `/privacy.html`, with
+`jrhughes003.github.io` as the authorized domain. The 7-day Testing-mode token expiry no longer
+applies. Google shows a one-time "unverified app" warning at sign-in, as expected.
+
+### D36. Google Tasks sync as built (design, M8; PROVISIONAL – needs owner review)
+Implements D13 and D31. The rules are in `src/core/sync/tasksMerge.ts`, a pure module with a
+full explanation at the top, and are carried out by `electron/google/tasksSync.ts`.
+- **Off until you turn it on.** Settings → Google Calendar → "Sync my tasks with Google Tasks".
+  The `tasks` scope is requested only then ("Allow Google Tasks access"), as staged in D10.
+  Turning sync off forgets the mapping and keeps every task on both sides.
+- **The first sync introduces open tasks only,** in both directions. Years of completed history
+  on either side are not copied across. Tasks that were already synced keep syncing whatever
+  their state.
+- **Lists:**
+  - the Inbox maps to the default list;
+  - each project maps to a list of the same name, matched case-insensitively or created;
+  - a Google list with no matching project creates one here.
+  If either the list or the project is deleted, that project's sync stops (it's "detached"),
+  its tasks are kept, the log says so, and the list is never silently re-created.
+- **Changes since last time** are found with `updatedMin` set to each list's high-water mark
+  (the newest `updated` time Google has reported) minus 1 second. This uses Google's clock
+  rather than ours, so a skewed PC clock can't hide changes.
+- **Inserts are idempotent through the outbox:**
+  - a row is written before each insert and removed when the new id is mapped;
+  - inserts are never retried automatically after a server error (only after rate limits);
+  - an unresolved row is matched to the task Google actually created, by list, title and
+    parent, never by time, again because clocks can differ.
+  This matching was originally time-based, and the integration test caught it producing a
+  duplicate when the two clocks disagreed. Fixed before commit.
+- **The due date syncs; the time of day stays local.** When Google moves the date, the local
+  time is kept. If Google clears the date of a repeating task (which needs one), the local
+  version is kept, sent back, and logged.
+- **Completing a repeating task in Google** completes it here, through TaskService, so the next
+  occurrence is created and then sent to Google.
+- **A project change here** moves the task to the right list (Tasks `move` with
+  `destinationTasklist`). Moving a task between lists in Google appears to us as a delete plus
+  a create, and is handled by the deletion rules.
+- **Sync log** in Settings: conflicts (with the value Google had), deletions, restored tasks,
+  adopted uploads, list changes and errors.
+- **When it runs:** with the calendar sync (every 5 minutes, on focus, on "Sync now"), and
+  10 seconds after a local edit (debounced).
+- **Testing:**
+  - 16 rule tests and 2 property tests on the pure merge;
+  - 17 integration tests against the fake Google Tasks server, one per rule;
+  - a randomized convergence test: random edits, completions, deletions and new dates on both
+    sides over several sync rounds. Both sides must agree, nothing may be duplicated, and no
+    open task may be left unsynced. 150 scenarios run by default, and a 500-scenario run passed
+    on 2026-10-07;
+  - a desktop end-to-end test with headless consent.
+- **Not yet verified:** a real Google account. Your check needs the Tasks API enabled and the
+  `tasks` scope added (README).
+- **Known limits (post-v1):**
+  - renaming a project or list doesn't rename its counterpart;
+  - subtasks of subtasks from Google are flattened to one level;
+  - the per-task order (`position`) isn't synced.
+
+### D37. Phone reminders as built (design, M9; PROVISIONAL – needs owner review)
+Implements D2/D8.
+- **The narrowest scope that works:** phone reminders need only `calendar.app.created`, which
+  lets the app create *its own* calendar and manage events on it, and nothing on your other
+  calendars. It's requested only when you turn phone reminders on ("Allow phone reminders").
+  Write access to your own calendars (`calendar.events.owned`) waits for M10, when
+  plan-my-day first needs it. D10's staging is unchanged in spirit; only the order moved.
+- **How it works:**
+  - a reminder you mark 📱 (a switch on each reminder in the task editor, shown once phone
+    reminders are active) becomes a 15-minute event on "Miss Minutes reminders";
+  - the event has a popup alert at its start, is marked *transparent* (it never counts as busy)
+    and is tagged with the rule and occurrence;
+  - the desktop notification still fires as well.
+- **Idempotent writes (D12):**
+  - the event id is derived from the rule and occurrence (`mm` + SHA-256 hex, which is valid
+    base32hex);
+  - Google refuses a duplicate create (409), which is answered with an update, so a crash between
+    creating and recording can never leave two events;
+  - a content hash avoids pointless updates.
+- **Converges every sync:** creates what's missing, updates what changed, and deletes events whose
+  reminder is gone, done, moved or past. Occurrences are mirrored up to 60 days ahead. Only events
+  this app created are touched, and only on its own calendar (tested).
+- **Kept out of view:** the app's calendar is excluded from the calendar picker and from Today,
+  where it would duplicate reminders.
+- **Turning it off** deletes every mirrored event, and so does disconnecting Google.
+- **The confirm-before-writing rule (D12)** is met by the explicit 📱 tick. No other write to
+  Google happens in M9.
+- **Not yet verified:** that the popup actually arrives on your phone. That's your check, and it
+  needs the `calendar.app.created` scope on the consent screen (README).
+
+### D38. Plan-my-day groundwork (design, M10 part 1; PROVISIONAL – needs owner review)
+Built so far: the pure core and the eval. Not yet built: the Claude prompt, the UI and applying
+plans to the calendar.
+- **Free time** (`src/core/plan/slots.ts`) is the planning window (wall-clock, so DST days come
+  out at 23 or 25 hours) minus merged busy time, after "now", in gaps of at least 15 minutes.
+  This free time is the only calendar information plan-my-day will ever send to Claude (D18).
+- **The greedy planner** (`greedy.ts`) is the fallback with AI off and the eval's baseline:
+  earliest deadline first, then priority, each task whole in the earliest gap that fits, the rest
+  listed as unscheduled.
+- **The validator** (`validate.ts`, a teaching module under D25) defines a valid plan:
+  - only real candidate tasks, each at most once;
+  - every block at least 15 minutes long, inside the window and not before now;
+  - no overlap with busy time or with another block;
+  - every block ends by its task's deadline;
+  - no block longer than estimate × 1.25 (with a 15-minute floor; see below);
+  - every candidate either scheduled or listed as unscheduled.
+  The app will refuse any plan it rejects, and the eval counts how often the model's plans
+  would have been rejected.
+- **The 15-minute floor:** "at least 15 minutes" and "at most estimate × 1.25" conflict for a
+  task estimated under 12 minutes. The over-estimate limit is therefore never below 15 minutes.
+- **The eval set has 200 seeded days** (frozen 2026-10-07), with both DST days and about 15 %
+  overloaded days. The first draft overloaded 106 of 200 days, against the plan's ~15 %. It was
+  corrected to 34 of 200 (17 %) before any planner other than the greedy baseline had run, so
+  it matches the pre-registered design and isn't tuned to a result.
+- **Baseline (greedy):**
+  - 0 % raw violations;
+  - 99.1 % of due-today tasks scheduled on feasible days;
+  - 100 % of overloaded days handled.
+  This is a strong baseline. A Claude plan has to beat it on *quality* (priority-weighted
+  minutes ≥ 1.00 × greedy) without breaking rules, or plan-my-day ships with the greedy engine,
+  as PLAN §5.2 already says.
+- **Property test:** over 1,000 random days, the greedy planner never produced a plan the
+  validator rejects.
+
