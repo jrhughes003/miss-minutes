@@ -468,3 +468,29 @@ D13 stands as written, with three additions. M8 is no longer blocked.
   completions on both sides. After two sync rounds with no further edits, both sides must
   agree, no task may be duplicated, and every lost local or remote value must appear in the
   sync log.
+
+### D32. How the Google connection is built (design, M5; PROVISIONAL – needs owner review)
+- **Importing the client:** Settings has an "Import client file…" button. The page reads the
+  JSON file you pick and hands its text to the main process once. The main process validates it
+  (it must be a "Desktop app" client) and stores the client ID and secret encrypted. The app
+  never reads a file path at runtime. The secret passes through the page once, which is
+  acceptable because Google treats a desktop client's secret as non-confidential (D9).
+- **Storing secrets:** they go in the settings table, encrypted with `safeStorage` (Windows
+  DPAPI). If encryption isn't available, nothing is stored. There is no plain-text fallback.
+- **Disconnecting:** the app revokes the grant at Google, then **deletes every cached calendar
+  and event** locally.
+- **Which calendars start selected:** a calendar seen for the first time is selected if it's
+  your primary calendar or shown in Google Calendar's own sidebar. After that, your choice in
+  Miss Minutes is kept. Free/busy-only calendars can't be selected, because they have no
+  details to show.
+- **When sync runs:** on start, every 5 minutes, after connecting, after selecting a calendar,
+  and when the window gains focus (at most once a minute). Concurrent syncs share one run.
+- **When the grant stops working:** if refreshing returns `invalid_grant` (access revoked, or
+  the 7-day Testing-mode limit from D29), the tokens are deleted and Settings shows "Reconnect".
+- **Testing:** every Google request goes through injected endpoints. Tests use a local fake
+  server (`electron/google/fakeGoogle.ts`) that checks PKCE, scopes, single-use codes, revoked
+  refresh tokens and paging, and can inject 429 errors. A test-only "headless consent" mode
+  works only when the endpoints are overridden, so it can never be used against Google itself.
+- **Not yet verified:** a sign-in against the real Google service. That's the owner's check,
+  using the steps in the README.
+
