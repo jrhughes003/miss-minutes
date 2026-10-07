@@ -61,6 +61,14 @@ export function isAllDayEventOn(e: Extract<CalendarEvent, { allDay: true }>, day
   return e.start <= day && day < e.end // end is exclusive
 }
 
+/** Does the event overlap the local dates [from, to] (inclusive) in `zone`? */
+export function overlapsLocalRange(e: CalendarEvent, from: LocalDate, to: LocalDate, zone: string): boolean {
+  if (e.allDay) return e.start <= to && e.end > from
+  const start = startOfLocalDay(from, zone).toISOString()
+  const end = endOfLocalDay(to, zone).toISOString()
+  return e.start < end && e.end > start
+}
+
 export function buildToday({ tasks, events = [], now, zone, allDayTime }: TodayInput): TodayModel {
   const today = toLocalDateTime(now, zone).slice(0, 10)
   const dayStart = startOfLocalDay(today, zone)

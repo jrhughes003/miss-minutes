@@ -2,6 +2,7 @@ import { useId, useState, type FormEvent } from 'react'
 import { toAppError } from '../storage/api'
 import { storageMode } from '../storage/runtime'
 import { useApi, useLive } from './data'
+import { GoogleSettings } from './GoogleSettings'
 
 export function SettingsView() {
   const api = useApi()
@@ -23,6 +24,8 @@ export function SettingsView() {
           <p className="hint">In the browser demo, reminders only fire while this tab is open. The desktop app runs them in the background.</p>
         )}
       </section>
+
+      <GoogleSettings />
 
       {storageMode === 'sqlite' && (
         <section className="settings-section" aria-labelledby={`${id}-app`}>

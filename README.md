@@ -40,4 +40,25 @@ npm run dist           # build the Windows installer into release/
 The privacy page is served at `<site>/privacy.html`. Use it as the privacy-policy link on the
 Google OAuth consent screen, with the site root as the homepage.
 
+## Connecting Google Calendar (desktop app)
+
+Miss Minutes connects with **your own** Google Cloud OAuth client, so no third party ever holds
+access to your calendar.
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create a project and enable the
+   **Google Calendar API**.
+2. Set up the **OAuth consent screen**:
+   - User type **External**.
+   - Add the scopes `calendar.calendarlist.readonly` and `calendar.events.readonly`.
+   - While the app is in **Testing**, add yourself as a test user. In Testing, Google sign-ins
+     expire after 7 days. To avoid that, publish the app ("In production"); Google then shows a
+     one-time "unverified app" warning when you sign in.
+3. Create credentials → **OAuth client ID** → application type **Desktop app**, and download the
+   JSON file. Keep it outside this repository.
+4. In Miss Minutes, go to **Settings → Google Calendar → Import client file…** and pick that JSON
+   file. Then click **Connect Google Calendar** and sign in in your browser.
+
+Disconnecting (in Settings) revokes access at Google and deletes the calendar data Miss Minutes
+had stored.
+
 The full README, including how the project was built, arrives at milestone M11.

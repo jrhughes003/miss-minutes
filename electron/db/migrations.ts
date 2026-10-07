@@ -99,6 +99,32 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    version: 3,
+    description: 'Google calendars and the cached event window',
+    sql: `
+      CREATE TABLE google_calendars (
+        id           TEXT PRIMARY KEY,
+        summary      TEXT NOT NULL,
+        color        TEXT,
+        access_role  TEXT NOT NULL,
+        is_primary   INTEGER NOT NULL DEFAULT 0,
+        -- Whether the user wants this calendar in Miss Minutes.
+        selected     INTEGER NOT NULL,
+        sort_order   INTEGER NOT NULL
+      );
+
+      -- A cache of the synced window (D11), replaced per calendar on each sync.
+      -- The event is stored as JSON (the app's CalendarEvent); nothing queries
+      -- inside it.
+      CREATE TABLE calendar_events (
+        id           TEXT PRIMARY KEY,
+        calendar_id  TEXT NOT NULL REFERENCES google_calendars(id) ON DELETE CASCADE,
+        data         TEXT NOT NULL
+      );
+      CREATE INDEX calendar_events_by_calendar ON calendar_events (calendar_id);
+    `,
+  },
 ]
 
 export function currentVersion(db: SqlDatabase): number {

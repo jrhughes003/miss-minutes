@@ -119,28 +119,28 @@ asked about, so here are short walkthroughs of those:
    - **Key by wall-clock time** (`rule|2026-10-08T13:15`). A zone change or the repeated
      fall-back hour can't produce a second key, so neither can produce a second notification.
 
-## Current state (2026-10-06, second autonomous session in progress)
-- You committed M0–M3 (commits 1–7). D31 settles the Google Tasks rules, and D26–D30 are
-  accepted.
-- **M4 is done locally:**
-  - fake-calendar generator;
-  - demo seeding;
-  - demo banner with "Start over";
-  - privacy page;
-  - GitHub Pages workflow;
-  - demo end-to-end tests with axe.
-- All checks pass: 204 unit tests, coverage thresholds, and end-to-end runs (web 4, demo 3,
-  desktop 4).
-- **The demo isn't deployed yet.** It needs you to push and turn on Pages (see the README, under
-  "Publishing the demo").
-- Working on: M5 (Google sign-in plus Calendar read), built and tested only against a local fake
-  Google server. No real Google calls.
+## Current state (2026-10-06, second autonomous session)
+- M0–M4 are committed and pushed by you.
+- **M5 (Google sign-in + Calendar read) is built and fully tested against a local fake Google
+  server.** All checks pass on the full working tree:
+  - 238 unit tests and coverage thresholds;
+  - end-to-end runs: web 4, demo 3, desktop 5 (one of them the Google flow, one the
+    rebuilt packaged app).
+- **Commit 10 (the M5 code) needs committing and pushing.** Until then, the pushed commit
+  `77f5034` doesn't build on GitHub, because it already references the M5 files. See
+  "Suggested commits".
+- **Not yet done, and only you can do it:** a real sign-in against Google, using the README's
+  "Connecting Google Calendar" steps and your client file.
+- Paused here at your request, so you can commit. Nothing else is being changed.
 
 ## Next up
-1. M5 against the fake Google server: PKCE plus loopback OAuth, encrypted tokens, calendar list
-   and picker, windowed event refresh, events in Today.
-2. You: push, turn on Pages, then publish the OAuth app with the Pages URL and privacy page
-   (D29). Then do the first real sign-in check of M5.
+1. **You:** commit and push commit 10, then commit 11 (docs). Then check that the "Deploy demo"
+   workflow publishes https://jrhughes003.github.io/miss-minutes/ and that CI is green.
+2. **You:** publish the OAuth consent screen with homepage https://jrhughes003.github.io/miss-minutes/
+   and privacy policy https://jrhughes003.github.io/miss-minutes/privacy.html (D29). Then try a
+   real connect from the desktop app (`npm run electron:dev`, or reinstall from `release\`).
+3. **Next session:** M6 (natural-language capture plus the parse eval). Live Claude runs need
+   your API key and cost approval; everything else uses the mock server.
 
 ## Open questions for owner
 - ~~D13 (the Google Tasks merge rules)~~ Decided on 2026-10-06 in D31. M8 is unblocked.
@@ -186,53 +186,46 @@ asked about, so here are short walkthroughs of those:
   electron-builder's tools were cached inside the project (`node_modules/.cache`).
 
 ## Suggested commits (in order; nothing is staged or committed)
-Commits 1–7 (M0–M3) were made by you on 2026-10-06. New suggestions follow; each has a
-ready-to-paste `git add` line for PowerShell.
+Commits 1–9 are yours (through `77f5034`). Pushing commits 10 and 11 together is fine: CI and
+Pages build only the final pushed state.
 
-8. **Settle the Google Tasks sync rules**
-   ```powershell
-   git add -- DECISIONS.md PLAN.md
-   ```
-   ```
-   Settle the Google Tasks sync rules
+10. **Connect Google Calendar read-only, tested against a fake Google server** (**urgent**:
+    makes `77f5034` build again)
+    ```powershell
+    git add -- electron/db/migrations.ts src/core/recurrence.ts src/core/today.ts src/ui/SettingsView.tsx src/ui/GoogleSettings.tsx src/shared/google.ts src/core/calendar electron/google e2e-electron/google.spec.ts
+    ```
+    ```
+    Connect Google Calendar read-only, tested against a fake Google server
 
-   Same-field conflicts keep the Miss Minutes value and log the
-   overwritten Google value. A task deleted on one side is deleted on
-   both unless the other side edited it, in which case the edit is kept
-   and the task restored. Completing a task is never treated as deleting
-   it, and Inbox tasks sync to the default "My Tasks" list (D31).
+    Sign-in uses the loopback redirect with PKCE; the OAuth client and
+    tokens are stored encrypted with safeStorage and never reach the
+    renderer. A refresh failure (revoked access, or the 7-day Testing-mode
+    limit) becomes a clear "reconnect" state. Selected calendars are
+    refetched for a window from 7 days back to 60 ahead, with Google
+    expanding repeats, and shown on Today. Rate limits back off
+    exponentially with jitter.
 
-   D26-D30, made during the first autonomous session, are reviewed and
-   accepted.
+    Every test runs against a local fake Google server that checks PKCE,
+    scopes, single-use codes, paging and revocation; nothing in the test
+    suite contacts Google.
 
-   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-   ```
-9. **Publish a self-contained web demo with a generated calendar**
-   ```powershell
-   git add -- .github/workflows/pages.yml .github/workflows/ci.yml .gitignore eslint.config.js package.json tsconfig.node.json playwright.demo.config.ts e2e-demo public/privacy.html src/demo src/ui/DemoBanner.tsx src/ui/TodayView.tsx src/App.tsx src/shared/ipc.ts src/storage/api.ts src/styles.css electron/main.ts electron/ipc.test.ts README.md PROGRESS.md
-   ```
-   ```
-   Publish a self-contained web demo with a generated calendar
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    ```
+11. **Document the Google connection**
+    ```powershell
+    git add -- DECISIONS.md README.md PROGRESS.md
+    ```
+    ```
+    Document the Google connection
 
-   The demo build seeds believable sample tasks relative to today and
-   shows a generated calendar: three calendars, a recurring standup with
-   one cancelled and one moved instance, overlapping meetings, a flight
-   across midnight, and a three-day all-day event with Google's exclusive
-   end date. The generator is seeded, so tests and screenshots repeat
-   exactly, and wall-clock times survive DST weeks.
+    README gains the five-step setup for your own OAuth client. D32
+    records how the connection is built: encrypted secrets with no
+    plain-text fallback, disconnect deleting all cached calendar data,
+    default calendar selection, the sync schedule, and the fake-server
+    test strategy.
 
-   Nothing in the demo touches a real account; a banner says so and
-   "Start over" restores the sample data. A privacy page covers the
-   desktop app, Google, AI and the demo, and doubles as the consent
-   screen's privacy link. A Pages workflow publishes the demo build, and
-   CI runs its end-to-end tests with axe.
-
-   Today now shows calendar events through a new calendar:events channel,
-   which the desktop app fills once Google Calendar is connected (M5).
-   GitHub Actions are updated to their current major versions.
-
-   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-   ```
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+    ```
 
 ## Milestones
 | # | Milestone | Size | Status |
@@ -242,7 +235,7 @@ ready-to-paste `git add` line for PowerShell.
 | M2 | Reminder engine | M | ✅ done locally (10,000-run reliability check passed) |
 | M3 | Today view + first desktop install | S–M | ✅ done locally; installer ready, not installed |
 | M4 | Web demo + Playwright/axe + privacy page | M | ✅ done locally (deploy needs you to push and turn on Pages) |
-| M5 | Google sign-in + Calendar read | L | ⏳ in progress (against a fake Google server; real sign-in check is yours) |
+| M5 | Google sign-in + Calendar read | L | ✅ built and tested against a fake Google server; real sign-in check is yours |
 | M6 | AI: NL capture + parse eval (grader is a teaching module) | M | ☐ |
 | M7 | AI: task breakdown | S | ☐ |
 | M8 | Google Tasks two-way sync | L | ☐ (rules decided in D31) |

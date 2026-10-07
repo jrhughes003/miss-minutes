@@ -14,7 +14,15 @@
 // instant happens later, in time.ts, under one tested DST policy. (rrule's own
 // time-zone support is a known source of bugs.)
 
-import { RRule } from 'rrule'
+import * as rrule from 'rrule'
+
+// rrule ships CommonJS (its "main") plus an ES build (its "module"). Bundlers
+// (Vite, esbuild, Vitest) read the ES build and see named exports. Node's own
+// ESM loader, which Playwright's test runner uses, sees only the CommonJS
+// build, where everything hangs off the default export. This line works in both.
+type RRuleModule = typeof rrule
+const RRule: RRuleModule['RRule'] = ((rrule as unknown as { default?: RRuleModule }).default ?? rrule).RRule
+type RRuleInstance = InstanceType<RRuleModule['RRule']>
 import { addDays, addMonths, isLocalDate, isLocalTime, type LocalDate, type LocalTime } from './time'
 
 export type Recurrence =
@@ -87,8 +95,8 @@ function fromFloating(f: Date, withTime: boolean): Due {
   return { date: iso.slice(0, 10), time: withTime ? iso.slice(11, 16) : null }
 }
 
-function ruleAnchoredAt(due: Due, rrule: string): RRule {
-  const options = RRule.parseString(normalizeRrule(rrule))
+function ruleAnchoredAt(due: Due, rule: string): RRuleInstance {
+  const options = RRule.parseString(normalizeRrule(rule))
   return new RRule({ ...options, dtstart: floating(due.date, due.time) })
 }
 
@@ -142,7 +150,7 @@ export function nextDue(due: Due, recurrence: Recurrence, ctx: CompletionContext
 export function previewOccurrences(due: Due, rrule: string, count: number): Due[] {
   const rule = ruleAnchoredAt(due, rrule)
   const out: Due[] = []
-  rule.all((d, i) => {
+  rule.all((d: Date, i: number) => {
     if (i >= count) return false
     out.push(fromFloating(d, due.time !== null))
     return true
