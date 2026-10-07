@@ -2,7 +2,7 @@
 // and timed, merged with reminders and, from M5, calendar events), and what's
 // waiting in the Inbox.
 
-import { useEffect, useId, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import type { Task } from '../core/tasks/types'
 import { toLocalDate } from '../core/time'
 import { buildToday, type TimelineItem } from '../core/today'
@@ -10,6 +10,7 @@ import { toAppError } from '../storage/api'
 import { useClock } from './clock'
 import { useApi, useLive } from './data'
 import { formatTime } from './format'
+import { CaptureBox } from './capture/CaptureBox'
 import { TaskEditor } from './tasks/TaskEditor'
 import { TaskRow } from './tasks/TaskRow'
 
@@ -32,7 +33,6 @@ export function TodayView({ onOpenTasks }: { onOpenTasks: () => void }) {
   const id = useId()
   const now = useNow()
   const [openId, setOpenId] = useState<string | null>(null)
-  const [title, setTitle] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const { data: tasks = [] } = useLive((a) => a.tasks.list({ status: 'open', includeSubtasks: true }), [], ['tasks'])
@@ -52,17 +52,7 @@ export function TodayView({ onOpenTasks }: { onOpenTasks: () => void }) {
     <TaskRow key={t.id} task={t} today={model.today} project={t.projectId ? projectById.get(t.projectId) : undefined} selected={openId === t.id} onToggle={toggle} onOpen={(x) => setOpenId(x.id)} />
   )
 
-  async function addForToday(e: FormEvent) {
-    e.preventDefault()
-    if (!title.trim()) return
-    try {
-      await api.tasks.create({ title, due: { date: model.today, time: null } })
-      setTitle('')
-      setError(null)
-    } catch (err) {
-      setError(toAppError(err).message)
-    }
-  }
+
 
   const nothingToday = model.allDay.tasks.length === 0 && model.allDay.events.length === 0 && model.timeline.length === 0
 
@@ -74,11 +64,7 @@ export function TodayView({ onOpenTasks }: { onOpenTasks: () => void }) {
           <span className="muted">{longDate.format(new Date(`${model.today}T00:00:00Z`))}</span>
         </div>
 
-        <form onSubmit={addForToday} className="quick-add">
-          <label htmlFor={`${id}-qa`} className="visually-hidden">New task for today</label>
-          <input id={`${id}-qa`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Add a task for today" autoComplete="off" />
-          <button type="submit" className="primary">Add</button>
-        </form>
+        <CaptureBox label="New task for today" placeholder="Add a task for today" defaultDue={{ date: model.today, time: null }} />
         {error && <p className="error-text" role="alert">{error}</p>}
 
         {model.overdue.length > 0 && (

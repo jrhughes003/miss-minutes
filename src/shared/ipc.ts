@@ -14,6 +14,7 @@ import type { ActiveReminder, ReminderAction } from '../core/reminders/types'
 import type { Settings } from '../core/settings'
 import type { NewTask, Project, Task, TaskPatch, TaskQuery } from '../core/tasks/types'
 import type { CalendarEvent } from '../core/today'
+import type { AiPrefs, AiStatus, CaptureResponse } from './ai'
 import type { GoogleStatus } from './google'
 
 export interface AppInfo {
@@ -60,6 +61,14 @@ export interface IpcContract {
   'google:disconnect': { args: []; result: GoogleStatus }
   'google:setCalendar': { args: [id: string, selected: boolean]; result: GoogleStatus }
   'google:syncNow': { args: []; result: GoogleStatus }
+
+  'ai:status': { args: []; result: AiStatus }
+  /** Stored encrypted; never returned to the renderer. */
+  'ai:setKey': { args: [key: string]; result: AiStatus }
+  'ai:clearKey': { args: []; result: AiStatus }
+  'ai:setPrefs': { args: [prefs: AiPrefs]; result: AiStatus }
+  /** Natural-language capture: Claude if enabled, else the on-device parser. Nothing is saved. */
+  'capture:parse': { args: [text: string]; result: CaptureResponse }
 }
 
 export type Channel = keyof IpcContract
@@ -94,6 +103,11 @@ const CHANNEL_SET: Record<Channel, true> = {
   'google:disconnect': true,
   'google:setCalendar': true,
   'google:syncNow': true,
+  'ai:status': true,
+  'ai:setKey': true,
+  'ai:clearKey': true,
+  'ai:setPrefs': true,
+  'capture:parse': true,
 }
 
 export const CHANNELS = Object.freeze(Object.keys(CHANNEL_SET) as Channel[])
@@ -105,7 +119,7 @@ export function isChannel(value: unknown): value is Channel {
 /** Events pushed from main to renderer (not request/response). */
 export interface PushEvents {
   /** Something changed in the database; the renderer should refetch. */
-  'data:changed': { scope: 'tasks' | 'reminders' | 'projects' | 'settings' | 'calendar' }
+  'data:changed': { scope: 'tasks' | 'reminders' | 'projects' | 'settings' | 'calendar' | 'ai' }
   /** The user clicked a reminder notification: show that reminder. */
   'reminder:open': { ruleId: string; occurrenceLocal: string; taskId: string }
 }

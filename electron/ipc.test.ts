@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { FakeClock } from '../src/core/clock'
 import { ValidationError } from '../src/core/tasks/normalize'
 import { TaskService } from '../src/core/tasks/service'
+import { UNAVAILABLE_AI } from '../src/shared/ai'
 import { UNAVAILABLE_GOOGLE } from '../src/shared/google'
 import { CHANNELS, decodeIpcError, isChannel } from '../src/shared/ipc'
 import { LocalTaskRepo, memoryStorage } from '../src/storage/localRepo'
@@ -31,6 +32,11 @@ function setup() {
     'google:disconnect': () => UNAVAILABLE_GOOGLE,
     'google:setCalendar': () => UNAVAILABLE_GOOGLE,
     'google:syncNow': () => UNAVAILABLE_GOOGLE,
+    'ai:status': () => UNAVAILABLE_AI,
+    'ai:setKey': () => UNAVAILABLE_AI,
+    'ai:clearKey': () => UNAVAILABLE_AI,
+    'ai:setPrefs': () => UNAVAILABLE_AI,
+    'capture:parse': () => ({ result: { kind: 'task', title: 'x', due: null, priority: 4, projectName: null, tags: [], recurrence: null, reminderMinutesBefore: null, question: null }, source: 'device', note: null }),
   }
   registerIpcHandlers(ipc, handlers)
   const call = (channel: string, ...args: unknown[]) => Promise.resolve(registered.get(channel)!(FROM_APP, ...args))

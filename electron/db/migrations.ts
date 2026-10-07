@@ -125,6 +125,28 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX calendar_events_by_calendar ON calendar_events (calendar_id);
     `,
   },
+  {
+    version: 4,
+    description: 'AI usage log',
+    sql: `
+      -- One row per Claude call, for the usage display and spending caps (D19).
+      -- Token counts and cost only: never the prompt or the reply.
+      CREATE TABLE ai_usage (
+        id                  INTEGER PRIMARY KEY,
+        at                  TEXT NOT NULL,
+        feature             TEXT NOT NULL,
+        model               TEXT NOT NULL,
+        input_tokens        INTEGER NOT NULL,
+        output_tokens       INTEGER NOT NULL,
+        cache_read_tokens   INTEGER NOT NULL DEFAULT 0,
+        cache_write_tokens  INTEGER NOT NULL DEFAULT 0,
+        cost_usd            REAL NOT NULL,
+        latency_ms          INTEGER NOT NULL,
+        ok                  INTEGER NOT NULL
+      );
+      CREATE INDEX ai_usage_by_time ON ai_usage (at);
+    `,
+  },
 ]
 
 export function currentVersion(db: SqlDatabase): number {

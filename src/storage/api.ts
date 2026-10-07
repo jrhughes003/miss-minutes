@@ -14,6 +14,9 @@ import { TaskService } from '../core/tasks/service'
 import type { NewTask, Project, Task, TaskPatch, TaskQuery } from '../core/tasks/types'
 import type { CalendarEvent } from '../core/today'
 import { toLocalDate } from '../core/time'
+import { parseBaseline } from '../core/capture/baseline'
+import { toLocalDateTime } from '../core/time'
+import { UNAVAILABLE_AI, type AiPrefs, type AiStatus, type CaptureResponse } from '../shared/ai'
 import { UNAVAILABLE_GOOGLE, type GoogleStatus } from '../shared/google'
 import { decodeIpcError, type MissMinutesApi, type PushEvents } from '../shared/ipc'
 import { fakeEventsBetween } from '../demo/fakeCalendar'
@@ -62,6 +65,16 @@ export interface DataApi {
     disconnect(): Promise<GoogleStatus>
     setCalendar(id: string, selected: boolean): Promise<GoogleStatus>
     syncNow(): Promise<GoogleStatus>
+  }
+  ai: {
+    status(): Promise<AiStatus>
+    setKey(key: string): Promise<AiStatus>
+    clearKey(): Promise<AiStatus>
+    setPrefs(prefs: AiPrefs): Promise<AiStatus>
+  }
+  capture: {
+    /** Understands a typed sentence. Saves nothing: the UI shows a preview first. */
+    parse(text: string): Promise<CaptureResponse>
   }
   /** True in the hosted web demo: sample data and a generated calendar. */
   isDemo: boolean
@@ -127,6 +140,13 @@ export function createIpcApi(b: MissMinutesApi): DataApi {
       set: (patch) => call(b.invoke('settings:set', patch)),
     },
     calendar: { events: (from, to) => call(b.invoke('calendar:events', from, to)) },
+    ai: {
+      status: () => call(b.invoke('ai:status')),
+      setKey: (key) => call(b.invoke('ai:setKey', key)),
+      clearKey: () => call(b.invoke('ai:clearKey')),
+      setPrefs: (prefs) => call(b.invoke('ai:setPrefs', prefs)),
+    },
+    capture: { parse: (text) => call(b.invoke('capture:parse', text)) },
     google: {
       status: () => call(b.invoke('google:status')),
       importClient: (json) => call(b.invoke('google:importClient', json)),
@@ -241,6 +261,29 @@ export function createLocalApi(storage: KeyValueStorage, options: LocalApiOption
     calendar: {
       events: (from, to) => read(() => (options.demo ? fakeEventsBetween(toLocalDate(clock.now(), clock.zone()), clock.zone(), from, to) : [])),
     },
+    ai: {
+      // The demo simulates AI (clearly labelled); the plain web build has none.
+      status: () => read(() => (options.demo ? demoAiStatus(storage) : UNAVAILABLE_AI)),
+      setKey: () => Promise.reject(new AppError('API keys can only be stored in the desktop app.')),
+      clearKey: () => Promise.resolve(UNAVAILABLE_AI),
+      setPrefs: () => Promise.resolve(options.demo ? demoAiStatus(storage) : UNAVAILABLE_AI),
+    },
+    capture: {
+      parse: (text) =>
+        read((): CaptureResponse => {
+          const now = clock.now()
+          const result = parseBaseline(text, {
+            nowLocal: toLocalDateTime(now, clock.zone()),
+            zone: clock.zone(),
+            projectNames: service.listProjects().map((p) => p.name),
+            tagNames: service.listTags(),
+          })
+          if (!options.demo) return { result, source: 'device', note: null }
+          recordDemoUsage(storage, text)
+          emit('ai')
+          return { result, source: 'mock', note: null }
+        }),
+    },
     google: {
       status: () => Promise.resolve(UNAVAILABLE_GOOGLE),
       importClient: () => Promise.reject(new AppError('Google Calendar is available in the desktop app.')),
@@ -279,6 +322,26 @@ function defaultApi(): DataApi {
     void seedDemo(local, toLocalDate(new Date(), systemClock.zone())).catch((e: unknown) => console.error('Miss Minutes: demo seeding failed', e))
   }
   return local
+}
+
+// --- Demo AI: simulated, and labelled as such everywhere it shows ------------
+
+const DEMO_USAGE_KEY = 'miss-minutes:demo-ai-usage:v1'
+
+function recordDemoUsage(storage: KeyValueStorage, text: string): void {
+  const u = JSON.parse(storage.getItem(DEMO_USAGE_KEY) ?? '{"calls":0,"input":0,"output":0}') as { calls: number; input: number; output: number }
+  // Roughly what a real Haiku 4.5 capture uses: the prompt plus the sentence in, a short JSON out.
+  u.calls++
+  u.input += 900 + Math.ceil(text.length / 4)
+  u.output += 120
+  storage.setItem(DEMO_USAGE_KEY, JSON.stringify(u))
+}
+
+function demoAiStatus(storage: KeyValueStorage): AiStatus {
+  const u = JSON.parse(storage.getItem(DEMO_USAGE_KEY) ?? '{"calls":0,"input":0,"output":0}') as { calls: number; input: number; output: number }
+  const cost = (u.input * 1 + u.output * 5) / 1_000_000
+  const summary = { calls: u.calls, costUsd: cost, inputTokens: u.input, outputTokens: u.output }
+  return { ...UNAVAILABLE_AI, available: true, keySet: true, enabled: true, mock: true, simulated: true, model: 'claude-haiku-4-5 (simulated)', monthToDate: summary, byFeature: u.calls ? { capture: summary } : {}, pricesAsOf: '2026-09-25' }
 }
 
 /** Clears everything the web build stored (demo reset). */

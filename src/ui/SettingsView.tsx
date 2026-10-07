@@ -2,7 +2,9 @@ import { useId, useState, type FormEvent } from 'react'
 import { toAppError } from '../storage/api'
 import { storageMode } from '../storage/runtime'
 import { useApi, useLive } from './data'
+import { AiSettings } from './AiSettings'
 import { GoogleSettings } from './GoogleSettings'
+import { OptimisticToggle } from './OptimisticToggle'
 
 export function SettingsView() {
   const api = useApi()
@@ -25,19 +27,16 @@ export function SettingsView() {
         )}
       </section>
 
+      <AiSettings />
+
       <GoogleSettings />
 
       {storageMode === 'sqlite' && (
         <section className="settings-section" aria-labelledby={`${id}-app`}>
           <h3 id={`${id}-app`}>App</h3>
-          <label className="check-row">
-            <input
-              type="checkbox"
-              checked={settings.startAtLogin}
-              onChange={(e) => api.settings.set({ startAtLogin: e.target.checked }).catch((err: unknown) => setError(toAppError(err).message))}
-            />
+          <OptimisticToggle checked={settings.startAtLogin} onChange={(startAtLogin) => api.settings.set({ startAtLogin })} onError={(err) => setError(toAppError(err).message)}>
             Start Miss Minutes when I sign in to Windows (hidden in the tray)
-          </label>
+          </OptimisticToggle>
           <p className="hint">Closing the window keeps Miss Minutes running in the tray so reminders still fire. Use Quit in the tray menu to stop it.</p>
         </section>
       )}

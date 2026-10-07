@@ -5,6 +5,7 @@ import { useId, useState, type ChangeEvent } from 'react'
 import type { GoogleStatus } from '../shared/google'
 import { toAppError } from '../storage/api'
 import { useApi, useLive } from './data'
+import { OptimisticToggle } from './OptimisticToggle'
 
 function ago(iso: string | null, now = Date.now()): string {
   if (!iso) return 'never'
@@ -22,9 +23,6 @@ export function GoogleSettings() {
   const [busy, setBusy] = useState<null | 'import' | 'connect' | 'disconnect' | 'sync'>(null)
   const [error, setError] = useState<string | null>(null)
   const [confirmDisconnect, setConfirmDisconnect] = useState(false)
-  // The user's latest choice per calendar, shown immediately while the main
-  // process applies it, so a click never looks ignored. Reverted on failure.
-  const [chosen, setChosen] = useState<Record<string, boolean>>({})
 
   if (!status) return null
   if (!status.available) {
@@ -112,28 +110,17 @@ export function GoogleSettings() {
             <ul className="calendar-choices">
               {status.calendars.map((c) => (
                 <li key={c.id}>
-                  <label className="check-row">
-                    <input
-                      type="checkbox"
-                      checked={chosen[c.id] ?? c.selected}
-                      disabled={!c.readable || busy !== null}
-                      onChange={(e) => {
-                        const selected = e.target.checked
-                        setChosen((prev) => ({ ...prev, [c.id]: selected }))
-                        void api.google.setCalendar(c.id, selected).then(
-                          () => setError(null),
-                          (err: unknown) => {
-                            setChosen(({ [c.id]: _dropped, ...rest }) => rest)
-                            setError(toAppError(err).message)
-                          },
-                        )
-                      }}
-                    />
+                  <OptimisticToggle
+                    checked={c.selected}
+                    disabled={!c.readable || busy !== null}
+                    onChange={(selected) => api.google.setCalendar(c.id, selected).then(() => setError(null))}
+                    onError={(err) => setError(toAppError(err).message)}
+                  >
                     <span className="dot" style={{ background: c.color ?? 'var(--p3)' }} aria-hidden="true" />
                     {c.summary}
                     {c.primary && <span className="muted"> (primary)</span>}
                     {!c.readable && <span className="muted"> (free/busy only: no details to show)</span>}
-                  </label>
+                  </OptimisticToggle>
                 </li>
               ))}
             </ul>

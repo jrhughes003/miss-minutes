@@ -10,6 +10,8 @@ import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, session, shell, Tray } from 'electron'
 import { systemClock } from '../src/core/clock'
+import { toLocalDateTime } from '../src/core/time'
+import { AiService } from './ai/service'
 import { readSettings, writeSettings } from '../src/core/settings'
 import { TaskService } from '../src/core/tasks/service'
 import type { PushChannel, PushEvents } from '../src/shared/ipc'
@@ -120,14 +122,22 @@ function start(): void {
 
   applyLoginItem(readSettings(settingsStore).startAtLogin)
 
+  const secrets = sqliteSecretStore(db, {
+    available: () => safeStorage.isEncryptionAvailable(),
+    encrypt: (s) => safeStorage.encryptString(s),
+    decrypt: (b) => safeStorage.decryptString(b),
+  })
+  // AI calls go to the real Anthropic API unless a mock server URL is set
+  // (development: `npm run ai:mock`; tests).
+  const ai = new AiService({ db, secrets, settings: settingsStore, clock: systemClock, baseURL: process.env.MISS_MINUTES_AI_BASE_URL || undefined })
+  const aiChanged = <T>(value: T): T => {
+    push('data:changed', { scope: 'ai' })
+    return value
+  }
   const google = new GoogleService({
     fetch,
     endpoints: googleEndpoints,
-    secrets: sqliteSecretStore(db, {
-      available: () => safeStorage.isEncryptionAvailable(),
-      encrypt: (s) => safeStorage.encryptString(s),
-      decrypt: (b) => safeStorage.decryptString(b),
-    }),
+    secrets,
     store: new CalendarStore(db),
     clock: systemClock,
     openBrowser,
@@ -176,6 +186,21 @@ function start(): void {
     'google:syncNow': async () => {
       await google.sync()
       return google.status()
+    },
+    'ai:status': () => ai.status(),
+    'ai:setKey': (key) => aiChanged(ai.setKey(key)),
+    'ai:clearKey': () => aiChanged(ai.clearKey()),
+    'ai:setPrefs': (prefs) => aiChanged(ai.setPrefs(prefs)),
+    'capture:parse': async (text) => {
+      const now = systemClock.now()
+      const response = await ai.capture(text, {
+        nowLocal: toLocalDateTime(now, systemClock.zone()),
+        zone: systemClock.zone(),
+        projectNames: tasks.listProjects().map((p) => p.name),
+        tagNames: tasks.listTags(),
+      })
+      push('data:changed', { scope: 'ai' })
+      return response
     },
     'settings:get': () => readSettings(settingsStore),
     'settings:set': (patch) => {

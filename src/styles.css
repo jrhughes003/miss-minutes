@@ -240,3 +240,17 @@ fieldset.field { border: 0; padding: 0; margin: 0 0 10px; }
 .calendar-choices { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 4px; }
 .inline-actions { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .ok-text { color: var(--ok); font-weight: 600; }
+
+/* Capture */
+.capture .hint { margin: -2px 0 8px; }
+.capture-preview {
+  border: 1px solid var(--accent); border-radius: var(--radius); background: var(--surface);
+  padding: 12px 14px; margin: 4px 0 14px;
+}
+.capture-preview h3 { margin-bottom: 8px; }
+
+/* AI usage */
+.usage-table { border-collapse: collapse; margin: 6px 0; font-size: 0.9rem; }
+.usage-table th, .usage-table td { text-align: left; padding: 4px 14px 4px 0; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.usage-table .total th, .usage-table .total td { font-weight: 600; }
+.caps input { width: 7em; }

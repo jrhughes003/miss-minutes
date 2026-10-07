@@ -57,3 +57,17 @@ test('the privacy page is reachable and accessible', async ({ page }) => {
   await page.getByRole('link', { name: /Back to the Miss Minutes demo/ }).click()
   await expect(page.getByRole('heading', { level: 2, name: 'Today' })).toBeVisible()
 })
+
+test('the demo understands typed sentences with clearly labelled simulated AI', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('New task for today').fill('Book the car service next Friday at 8am #car')
+  await page.getByLabel('New task for today').press('Enter')
+  const card = page.getByRole('region', { name: 'Add this task?' })
+  await expect(card.getByText('Understood by simulated AI (no real model)')).toBeVisible()
+  await expect(card.getByLabel(/^Time/)).toHaveValue('08:00')
+  await expectAccessible(page)
+  await card.getByRole('button', { name: 'Add task' }).click()
+  await page.getByRole('button', { name: 'Settings', exact: true }).click()
+  await expect(page.getByText(/no real model is called here/)).toBeVisible()
+  await expectAccessible(page)
+})

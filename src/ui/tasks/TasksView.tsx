@@ -3,6 +3,7 @@ import type { Project, Task } from '../../core/tasks/types'
 import { toAppError, type AppError } from '../../storage/api'
 import { useToday } from '../clock'
 import { useApi, useLive } from '../data'
+import { CaptureBox } from '../capture/CaptureBox'
 import { TaskEditor } from './TaskEditor'
 import { TaskRow } from './TaskRow'
 
@@ -16,7 +17,6 @@ export function TasksView() {
   const [showDone, setShowDone] = useState(false)
   const [tag, setTag] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
-  const [title, setTitle] = useState('')
   const [error, setError] = useState<AppError | null>(null)
   const [newProject, setNewProject] = useState('')
   const [renaming, setRenaming] = useState<string | null>(null)
@@ -48,17 +48,7 @@ export function TasksView() {
   const listName = list.kind === 'all' ? 'All tasks' : list.kind === 'inbox' ? 'Inbox' : (currentProject?.name ?? 'Project')
   const report = (e: unknown) => setError(toAppError(e))
 
-  async function add(e: FormEvent) {
-    e.preventDefault()
-    if (!title.trim()) return
-    setError(null)
-    try {
-      await api.tasks.create({ title, projectId: list.kind === 'project' ? list.id : null })
-      setTitle('')
-    } catch (err) {
-      report(err)
-    }
-  }
+
 
   async function addProject(e: FormEvent) {
     e.preventDefault()
@@ -136,11 +126,13 @@ export function TasksView() {
           )}
         </div>
 
-        <form onSubmit={add} className="quick-add">
-          <label htmlFor={`${id}-qa`} className="visually-hidden">New task</label>
-          <input id={`${id}-qa`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={`Add a task to ${listName === 'All tasks' ? 'the Inbox' : listName}`} autoComplete="off" />
-          <button type="submit" className="primary">Add task</button>
-        </form>
+        <CaptureBox
+          key={list.kind === 'project' ? list.id : list.kind}
+          label="New task"
+          placeholder={`Add a task to ${listName === 'All tasks' ? 'the Inbox' : listName}`}
+          defaultProjectId={list.kind === 'project' ? list.id : null}
+          submitLabel="Add task"
+        />
         {error && <p className="error-text" role="alert">{error.message}</p>}
 
         <div className="filters">

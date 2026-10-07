@@ -29,7 +29,7 @@ test('tasks: add, edit, complete, and survive a reload (web build, localStorage)
   await page.reload()
   await page.getByRole('button', { name: 'Tasks', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Pick up prescription' })).toBeVisible()
-  await expect(page.getByText('P2')).toBeVisible()
+  await expect(page.getByText('P2', { exact: true })).toBeVisible()
 
   // click, not check(): a completed task leaves the open list, so its box never stays ticked.
   await page.getByRole('checkbox', { name: 'Complete "Pick up prescription"' }).click()
