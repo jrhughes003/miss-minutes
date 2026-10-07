@@ -1,0 +1,12 @@
+{
+  // Two programs share one tree: the renderer (browser + DOM) and the Node side
+  // (Electron main/preload, build scripts, Playwright). Each gets its own globals
+  // so a `window` in the main process, or a `require` in the renderer, is a type
+  // error rather than a runtime surprise. `src/core` and `src/shared` are pure
+  // TypeScript with no DOM or Node imports, so both programs include them.
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}

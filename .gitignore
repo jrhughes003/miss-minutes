@@ -1,0 +1,35 @@
+# Dependencies and build output
+node_modules/
+dist/
+dist-electron/
+release/
+coverage/
+*.tsbuildinfo
+
+# Test output
+test-results/
+playwright-report/
+blob-report/
+
+# Eval runs may contain model output; results worth keeping are copied into eval/results/ deliberately
+eval/.runs/
+
+# Local data and secrets: never commit
+.dev-user-data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+.env
+.env.*
+*.secret.json
+# Google OAuth client files (D9). The app imports the client at runtime and
+# encrypts it with safeStorage; the JSON file itself never belongs in git.
+*credentials*.json
+client_secret*.json
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
