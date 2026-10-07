@@ -82,4 +82,38 @@ log.
 3. In a task's reminders, tick **📱**. The reminder then also appears on a "Miss Minutes
    reminders" calendar with an alert, so Google Calendar on your phone notifies you.
 
+## The look
+
+Miss Minutes is styled after retro-futurist office tech: amber CRT screens in chunky bezels,
+keycap buttons and indicator lamps (all original art; D40). The **Terminal / Office** switch
+at the top right swaps between the dark amber theme and a light manila-paper one. Animated
+effects stop if your system asks for reduced motion.
+
+## Plan my day
+
+Open **Plan** and pick a day (tomorrow by default).
+
+1. Write what you need to do, one per line. Add a length like `1h`, `45m` or `for 20 minutes`
+   (30 minutes if you leave it out); `p1` and `#tag` work as they do elsewhere. Tick any tasks
+   already due by then.
+2. **Lay it out on the day.** Everything is fitted around your calendar, earliest deadline and
+   highest priority first, with a short break between blocks (you can change the break and the
+   hours your day runs). Drag a block to move it, drag its bottom edge to change its length, or
+   use the keyboard: ↑/↓ moves it 15 minutes, Shift+↑/↓ changes the length, Delete sends it back
+   to the tray. Clashes show in red, and you can't confirm until they're fixed.
+3. **Review and confirm.** Each block becomes a task with that time and, unless you untick it, a
+   reminder 5 minutes before. With Google Calendar connected you can also put the blocks on a
+   calendar you own.
+
+**Undo** (at the top of the Plan page) takes back the latest plan: new tasks are deleted,
+rescheduled ones get their old date back, and the calendar blocks are removed.
+
+### Calendar blocks (optional)
+
+1. On the consent screen's **Data access** page, add the scope
+   `.../auth/calendar.events.owned`. It lets Miss Minutes add events to calendars you own; it
+   can't see or change calendars only shared with you.
+2. The first time you tick **Also add these as blocks on my Google Calendar**, click **Allow
+   calendar blocks**. Google asks once.
+
 The full README, including how the project was built, arrives at milestone M11.

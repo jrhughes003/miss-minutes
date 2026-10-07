@@ -494,7 +494,7 @@ D13 stands as written, with three additions. M8 is no longer blocked.
 - **Not yet verified:** a sign-in against the real Google service. That's the owner's check,
   using the steps in the README.
 
-### D33. Visual direction: the retro-futurist "TVA" look from Loki (user, 2026-10-06; not yet built)
+### D33. Visual direction: the retro-futurist "TVA" look from Loki (user, 2026-10-06; built 2026-10-07, see D40)
 - **The ask:** the UI should feel like the technology in the *Loki* TV series, which is what
   inspired the name.
 - **What that style is, in design terms:** 1970s retro-futurist bureaucratic tech.
@@ -710,4 +710,117 @@ plans to the calendar.
   as PLAN §5.2 already says.
 - **Property test:** over 1,000 random days, the greedy planner never produced a plan the
   validator rejects.
+
+### D39. Plan my day as built (design, M10 part 2; PROVISIONAL – needs owner review)
+Your request (2026-10-07): write out tomorrow's to-dos, see them on a view of the day with the
+calendar already on it, put them in the gaps, and have that create tasks with times. Your
+answers: the output is **tasks plus calendar blocks**, with a **reminder 5 minutes before**.
+
+- **Three steps, one page (Plan):**
+  1. a brain dump, one task per line, plus a tick list of tasks already due;
+  2. a board: a day timeline with your calendar in grey and the tasks as movable blocks;
+  3. a confirm sheet.
+  Nothing is written until you confirm (PLAN §4).
+- **Lengths:**
+  - read from the line ("1h", "45m", "(30m)", "for 20 minutes", "1.5 hours");
+  - otherwise the task's estimate, otherwise 30 minutes;
+  - never under 15 minutes or over 12 hours.
+- **The board** is pure functions over a list of items (`core/plan/board.ts`):
+  - everything snaps to a 15-minute grid;
+  - "Auto-arrange" runs the greedy planner over the tray only, so blocks you placed by hand
+    stay put;
+  - the validator runs on every change, problems show in red, and Confirm is disabled until
+    they're fixed.
+- **Board defaults (PROVISIONAL):**
+  - the day runs 07:00–22:00 (editable);
+  - a 10-minute break between blocks and around meetings (none, 5, 10 or 15);
+  - start times are rounded up to the grid.
+  The greedy planner gained these as options. Both default to off, so the frozen eval baseline
+  is unchanged (re-run: identical numbers).
+- **Accessible without a mouse:**
+  - every block is focusable and its label gives its times and any problem;
+  - ↑/↓ moves a block, Shift+↑/↓ resizes it, and Delete sends it back to the tray;
+  - tray items have a Place button.
+  axe passes on the board and the confirm sheet.
+- **Apply** (`core/plan/apply.ts`):
+  - **re-validation:** the plan is checked again against the calendar *as it is now* and the
+    window you chose, and refused if it no longer fits;
+  - **tasks:** new lines become tasks; ticked tasks are rescheduled, keeping their own
+    reminders and adding the 5-minute one (at most 5 reminders);
+  - **the batch:** every apply is recorded as a batch (SQLite migration 7, or localStorage in
+    the web build). It's saved, *including the ids of the calendar blocks it's about to
+    write*, before any block is written. A half-failed write can therefore still be undone.
+    A test covers this case, and it caught the original order.
+  - **missing tasks:** every task to reschedule is checked to still exist before anything is
+    created.
+- **Undo** reverses the latest batch exactly:
+  - created tasks are deleted;
+  - rescheduled tasks get their old date, estimate and reminders back;
+  - blocks are removed.
+  It's idempotent.
+- **Calendar blocks:**
+  - **scope:** written with `calendar.events.owned`, asked for only when you first tick "add
+    blocks" (incremental consent, like D37). It covers calendars you own only; the picker
+    lists those, primary first, and never the app's reminders calendar.
+  - **ids:** each block's event id derives from the batch and item (`mmplan` +
+    sha256 hex), so a retry can't duplicate one.
+  - **the events themselves:** opaque (they count as busy), with no Google alert, because the
+    task's reminder does that job.
+  - **no duplicates on Today:** synced back, a block carries `extendedProperties.mmBatch`, so
+    Today hides it when its task is already on the timeline.
+- **Web demo:** the same flow against the generated calendar, tasks only (no Google).
+- **Not in this part:** the Claude "arrange with AI" planner and its eval run. These still
+  need your key and OK (PLAN §5.2). Until then the greedy arranger is the engine, which is
+  what §5.2 prescribes if Claude doesn't beat it.
+
+### D40. The "time bureau" look as built (design, 2026-10-07; PROVISIONAL – needs owner review)
+Your ask (2026-10-07): before more features, make the UI feel like the technology at the TVA
+in *Loki*, "a very old digital feel". This builds D33.
+
+- **What the show's design is:** production designer Kasra Farahani's TVA imagines that
+  "digital technology never existed, and analog technology just kept getting more
+  sophisticated":
+  - CRT monitors, typewriters and paper;
+  - plastic, wood panelling and curved shapes;
+  - an orange-and-grey 1950s–60s palette;
+  - screen graphics (by Cantina Creative) that are deliberately low-fi, a little pixelated, in a
+    limited palette.
+- **How the app takes that on**, with original art only:
+  - **The console:**
+    - a moulded plastic top panel with a three-colour orange stripe;
+    - a wood-panelled wall behind it;
+    - every page sits on a **CRT screen inside a thick bezel**, with faint scanlines, a phosphor
+      glow and a very slow flicker.
+  - **Type** (both fonts open-licensed, OFL 1.1, and bundled so the desktop app works offline;
+    `font-src 'self'` is unchanged):
+    - **VT323**, a CRT-terminal face, for headings, times and stamps;
+    - **IBM Plex Mono** for reading text.
+  - **Controls:**
+    - keycap buttons whose thick lower edge compresses when pressed;
+    - nav keys with **indicator lamps** (the current page's lamp is lit);
+    - checkboxes as lamps that light up with a tick.
+  - **An analog clock** on the console (original SVG, not the show's character), beside an
+    amber readout of the time.
+  - **Case-file language:**
+    - priorities and dates are rubber **stamps**;
+    - overdue tasks get a red **"Variance"** stamp;
+    - due reminders arrive as an **"Incoming dispatch"**;
+    - calendar time on the Plan board is hatched ("spoken for");
+    - the Today schedule is a glowing **timeline** with a node at each moment and a blinking
+      NOW cursor.
+- **Two themes** (PROVISIONAL), switched from the console and remembered per device:
+  - **Terminal**, amber phosphor on a dark CRT, is the default;
+  - **Office** is brown ink on manila paper with beige plastic hardware.
+- **Accessibility:**
+  - axe passes on every page in **both** themes (a new demo test);
+  - effects sit *behind* text and never lower its contrast;
+  - flicker and blinking stop under `prefers-reduced-motion`;
+  - glow, scanlines and grain are removed under `prefers-contrast: more`;
+  - `forced-colors` gets plain system colours;
+  - stamp and dispatch labels are decorative CSS with empty alt text, so screen readers hear
+    the real headings unchanged.
+- **Not changed:** layout, wording, and every accessible name and test hook. It's a skin over
+  the same app.
+- **Still open (from D33):** "Miss Minutes" is a Marvel character's name. Decide the public
+  name before v1 (M11).
 

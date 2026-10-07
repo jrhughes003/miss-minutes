@@ -119,7 +119,65 @@ asked about, so here are short walkthroughs of those:
    - **Key by wall-clock time** (`rule|2026-10-08T13:15`). A zone change or the repeated
      fall-back hour can't produce a second key, so neither can produce a second notification.
 
-## Current state (2026-10-07, autonomous session while you're away)
+## Current state (2026-10-07, latest): the new look, on top of Plan my day
+- **The UI now has the retro-futurist "time bureau" look you asked for** (D40, building on D33):
+  - every page sits on an amber CRT screen inside a bezel;
+  - keycap buttons, nav keys with indicator lamps, and an analog console clock;
+  - stamps, a red "Variance" stamp for overdue tasks, "Incoming dispatch" reminders, and a
+    glowing timeline;
+  - two themes: **Terminal** (dark, the default) and **Office** (light manila), with the switch
+    at the top right.
+  Layout, wording and behaviour are unchanged.
+- **Checks, all passing:**
+
+  | Suite | Result |
+  |---|---|
+  | Unit tests | 397, plus coverage thresholds |
+  | Web end-to-end | 4/4 |
+  | Demo end-to-end | 7/7; new: axe on every page in the light theme, and the theme is remembered |
+  | Desktop end-to-end | 9/9; new: the bundled fonts load under the app's security policy |
+- **Commits 22–24 weren't made yet**, and the new look rewrites the same files as the Plan page
+  (`styles.css`, `App.tsx`). The suggested commits below are regrouped to match: core, then UI,
+  then docs.
+
+## Earlier state (2026-10-07, later): Plan my day is built
+- **Commits 18–21 are yours** (through `c8c850a`). Everything below is uncommitted; see
+  commits 22–24.
+- **"Plan my day" (M10 part 2) is built**, as you asked: the result is tasks plus calendar blocks,
+  with a reminder 5 minutes before each (D39). The flow, on the new **Plan** page:
+  1. write tomorrow's to-dos;
+  2. **Lay it out on the day** (around your calendar, with breaks);
+  3. drag, resize or use the keyboard to adjust;
+  4. **Create the plan**;
+  5. **Undo** takes it all back.
+- **Checks, all passing:**
+
+  | Suite | Result |
+  |---|---|
+  | Unit tests | 397, plus coverage thresholds |
+  | Web end-to-end | 4/4 |
+  | Demo end-to-end | 6/6, including the Plan flow: a real drag from the tray, and axe on the board and confirm sheet |
+  | Desktop end-to-end | 9/9, including Plan against the fake Google server: Allow calendar blocks, blocks on `me@example.com`, Undo removes them; the packaged app was rebuilt |
+
+  The plan eval baseline was re-run, with identical numbers.
+- **Bugs that the new tests caught and that are fixed:**
+  - dragging from the tray couldn't work in a real browser (no pointer capture), and pressing
+    **Place** could count as a drop;
+  - a block write that failed halfway left blocks that Undo didn't know about;
+  - a vanished task found halfway through left created tasks outside any batch;
+  - an applied plan would have shown each block twice on Today (once as the task, once as
+    its calendar event).
+- **Installer build:** `npm run dist` failed twice with `EPERM` renaming
+  `release\win-unpacked.tmp`. Building to a folder outside the repo worked, so the fresh build
+  was copied into `release\`; the installer and `win-unpacked` there are current.
+  - **Hypothesis:** something has a handle on `release\`, such as an Explorer window, a shell
+    open in that folder, or antivirus scanning it.
+  - It isn't your `electron:dev` session, which I left running.
+  - If `npm run dist` fails for you, close anything open in `release\` and try again.
+- **Your part before real use of calendar blocks:** on the consent screen's Data access page,
+  add `.../auth/calendar.events.owned` (README → Plan my day).
+
+## Earlier state (2026-10-07, autonomous session while you're away)
 - M0–M7 are committed and pushed; CI is green, the live demo works, and the OAuth app is in
   production.
 - **M8 (Google Tasks two-way sync) and M9 (📱 phone reminders) are built**, both tested against
@@ -172,13 +230,15 @@ It decides whether a proposed day plan is *possible*, whoever proposed it.
   test proving the greedy planner never trips it.
 
 ## Next up
-1. **You:** commits 18–21 below, then push them together.
-2. **Next: M10 part 2:**
-   - the Claude plan prompt (free intervals only);
-   - the "Plan my day" UI with a proposed timeline;
-   - apply with confirmation and undo, which needs `calendar.events.owned` (re-consent once);
-   - the Claude plan eval (your key and OK).
-3. Then M11 (polish, the D33 visual identity, README, release).
+1. **You:**
+   - look at the new UI (`npm run electron:dev`, or build the demo) and tell me what to push
+     further or pull back;
+   - commits 22–24 below (push them together);
+   - add the `calendar.events.owned` scope;
+   - review D39 and D40.
+2. **Next: the Claude "arrange with AI" planner** (it sees free intervals only, D18), with the
+   greedy arranger as the fallback, plus its eval run (needs your key and OK).
+3. Then M11 (polish, the app-name decision, README, release).
 
 ## Open questions for owner
 - ~~D13 (the Google Tasks merge rules)~~ Decided on 2026-10-06 in D31. M8 is unblocked.
@@ -224,91 +284,74 @@ It decides whether a proposed day plan is *possible*, whoever proposed it.
   electron-builder's tools were cached inside the project (`node_modules/.cache`).
 
 ## Suggested commits (in order; nothing is staged or committed)
-Commits 1–17 are yours (through `081cd8d`). M8 and M9 share files, so these three are cut by
-layer and must be **pushed together** (commit 18 alone doesn't build). CI checks only the pushed
-head, which passed every check here.
+Commits 1–21 are yours (through `c8c850a`). Commit 22 builds alone; 23 needs 22. Push all three
+together.
 
-18. **Add the Google Tasks sync engine**
+22. **Add the plan-my-day board and apply/undo core**
     ```powershell
     cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- src/core/sync electron/google/tasksSync.ts electron/google/tasksSyncStore.ts electron/google/tasksSync.test.ts electron/google/fakeGoogle.ts electron/google/api.ts electron/db/migrations.ts
+    git add -- src/core/plan src/core/today.ts src/core/today.test.ts src/core/calendar/google.ts src/core/calendar/google.test.ts
     ```
     ```
-    Add the Google Tasks sync engine
+    Add the plan-my-day board and apply/undo core
 
-    Each synced task keeps a snapshot of the fields both sides last agreed
-    on, and each sync merges field by field against it: a change made on
-    one side is taken, edits to different fields on both sides both
-    survive, and a same-field conflict keeps the local value and logs what
-    Google had (D31). A task deleted on one side is deleted on both unless
-    the other side edited it, in which case the edit is kept and the task
-    restored.
+    The board is a list of items, each either in the tray or at a time on
+    the day, with pure functions for every drag, resize and keyboard nudge,
+    all on a 15-minute grid. Auto-arrange runs the greedy planner over the
+    tray only, so blocks placed by hand stay put, and can leave a break
+    between blocks; both options default to off, so the eval baseline is
+    unchanged.
 
-    Changes are found with Google's own timestamps, so a skewed PC clock
-    cannot hide them, and uploads go through an outbox so an ambiguous
-    insert is matched to the task Google created rather than sent twice.
-    The rules are a pure module with property tests; the engine is tested
-    against a fake Google Tasks server, including a randomized run of edits
-    on both sides that must always converge.
+    Applying a plan re-checks it against the calendar as it is now, then
+    creates or reschedules the tasks with a reminder before each. The batch
+    is saved, with the ids of the calendar blocks it is about to write,
+    before any block is written, so Undo can reverse even a half-finished
+    apply. A block synced back from Google is hidden on Today when its task
+    is already there.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
-19. **Turn on Tasks sync and phone reminders from Settings**
+23. **Add the Plan page and the retro-futurist console look**
     ```powershell
     cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- src/core/reminders/phone.ts src/core/reminders/phone.test.ts src/core/calendar/google.ts electron/google/phoneMirror.ts electron/google/phoneMirror.test.ts electron/google/calendarSync.ts electron/google/oauth.ts electron/google/service.ts electron/ipc.test.ts electron/main.ts src/shared/google.ts src/shared/ipc.ts src/storage/api.ts src/styles.css src/ui/GoogleSettings.tsx src/ui/tasks/ReminderField.tsx src/ui/tasks/TaskEditor.tsx e2e-electron/googleTasks.spec.ts e2e-electron/phone.spec.ts
+    git add -- src/ui src/App.tsx src/main.tsx src/styles.css src/storage/api.ts src/shared/ipc.ts src/shared/google.ts electron/main.ts electron/ipc.test.ts electron/db/migrations.ts electron/db/batchStore.ts electron/google/oauth.ts electron/google/service.ts e2e-demo/demo.spec.ts e2e-electron/plan.spec.ts e2e-electron/app.spec.ts package.json package-lock.json
     ```
     ```
-    Turn on Tasks sync and phone reminders from Settings
+    Add the Plan page and the retro-futurist console look
 
-    Both are off until switched on, and each asks Google only for what it
-    needs, when it is needed: Tasks access for sync, and calendar.app.created
-    for phone reminders, which lets the app manage its own calendar and
-    nothing else.
+    Plan: write the day's to-dos one per line, with lengths like "1h" or
+    "30m", and tick tasks already due. They are laid out around the
+    calendar on a day timeline, and can be dragged, resized or moved from
+    the keyboard; clashes show live and block confirming. Confirming
+    creates the tasks at those times with a reminder 5 minutes before, and
+    can put the blocks on a Google calendar you own, using
+    calendar.events.owned, asked for only when first needed. Undo takes
+    back the latest plan. Batches live in SQLite (migration 7).
 
-    A reminder marked with the phone switch becomes a short event with an
-    alert on a "Miss Minutes reminders" calendar, so the phone notifies even
-    when the PC is off. Event ids are derived from the reminder and its
-    occurrence, so a retry can never duplicate one; each sync creates,
-    updates and deletes until the calendar matches. That calendar is kept
-    out of Today and the calendar picker, and everything on it is removed
-    when phone reminders are turned off.
+    Look: the app now sits on an amber CRT screen inside a console, with
+    keycap buttons, indicator lamps, an analog clock, rubber-stamp labels
+    and a glowing timeline, in the spirit of retro-futurist office tech
+    (original art only). A light "office" theme is one switch away. Both
+    themes pass axe on every page; effects never lower text contrast and
+    stop for reduced motion. The fonts (VT323, IBM Plex Mono; OFL) are
+    bundled, so the desktop app stays offline-capable.
+
+    The Plan flow is tested end to end on the desktop against the fake
+    Google server, and in the demo with axe.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
-20. **Document Tasks sync and phone reminders**
+24. **Document plan my day and the new look**
     ```powershell
     cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- README.md
+    git add -- README.md DECISIONS.md PROGRESS.md
     ```
     ```
-    Document Tasks sync and phone reminders
+    Document plan my day and the new look
 
-    README gains the setup steps for Tasks sync and phone reminders. (The
-    matching decisions, D36 and D37, are committed with the next commit,
-    which also carries DECISIONS.md and PROGRESS.md.)
-
-    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-    ```
-21. **Lay the groundwork for plan my day: free time, a greedy planner and a validator**
-    ```powershell
-    cd C:\Users\jrhug\Documents\GitHub\miss-minutes
-    git add -- src/core/plan eval/plan eval/results/plan-greedy-2026-10-07.md package.json DECISIONS.md PROGRESS.md
-    ```
-    ```
-    Lay the groundwork for plan my day: free time, a greedy planner and a validator
-
-    Free time is the planning window minus merged busy time, and is all
-    plan-my-day will ever tell Claude about the calendar. The validator
-    defines a possible plan: real tasks once each, inside the window and
-    after now, clear of meetings and of each other, done by each deadline,
-    and not wildly over estimate; the app will refuse any plan it rejects.
-
-    The greedy planner (earliest deadline, then priority) is the fallback
-    and the baseline. On a frozen set of 200 generated days, including both
-    DST changes and 34 overloaded days, it breaks no rule, schedules 99.1 %
-    of due-today tasks and lists what it cannot fit. A property test over
-    1,000 random days confirms the validator never rejects its plans.
+    README gains the Plan my day steps, the calendar-blocks scope and the
+    theme switch; DECISIONS gains D39 (plan my day) and D40 (the visual
+    identity), both as built and provisional.
 
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
@@ -326,8 +369,8 @@ head, which passed every check here.
 | M7 | AI: task breakdown | S | ✅ built; eval needs your key and OK |
 | M8 | Google Tasks two-way sync | L | ✅ built and tested against a fake server; real-account check is yours |
 | M9 | Calendar write + 📱 phone reminders | M | ✅ phone reminders built and tested against a fake server; real phone check is yours; own-calendar writes move to M10 |
-| M10 | AI: plan my day + eval (validator is a teaching module) | L | ⏳ part 1 done (core, validator, eval, greedy baseline); part 2 next |
-| M11 | Polish, README, v1.0.0 release (includes the D33 visual identity pass) | M | ☐ |
+| M10 | AI: plan my day + eval (validator is a teaching module) | L | ⏳ Plan page, apply, undo and calendar blocks built and tested (greedy engine); Claude planner + eval run next |
+| M11 | Polish, README, v1.0.0 release (visual identity done early, D40) | M | ☐ |
 
 ## Explain-it-back log
 Record each milestone's questions here once you can answer them without notes (questions are
@@ -338,7 +381,11 @@ in the session report above and in PLAN.md §7).
   tomorrow remind me 15 minutes before" gives the title "Dentist remind me"). The frozen eval
   baseline must stay as it is, but the user-facing fallback could get a small fix (a separate
   copy) in M11.
-- D33 visual identity pass (Loki/TVA-inspired retro-futurism, original art only). Also decide
-  on the app name before the public v1.
+- ~~D33 visual identity pass~~ Built 2026-10-07 (D40). Still to decide: the app name before
+  the public v1.
 - Native Windows toast buttons (snooze in the toast itself, via `toastXml`): post-v1 (D14).
 - A "quiet hours" setting (D6 left it optional).
+- Plan board: dragging a tray item to a time that's scrolled out of view needs the timeline
+  scrolled first (no auto-scroll while dragging). Place and the keyboard cover it.
+- Plan blocks: if you later change a planned task's time, its calendar block stays at the old
+  time (Undo removes both). Possibly: move the block with the task.
