@@ -12,6 +12,10 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, session, shell,
 import { systemClock } from '../src/core/clock'
 import { toLocalDateTime } from '../src/core/time'
 import { AiService } from './ai/service'
+import { applyPlan, busyFromEvents, summarize, undoPlan } from '../src/core/plan/apply'
+import { DEFAULT_PLAN_WINDOW } from '../src/core/plan/types'
+import { toLocalDate } from '../src/core/time'
+import { sqliteBatchStore } from './db/batchStore'
 import { readSettings, writeSettings } from '../src/core/settings'
 import { TaskService } from '../src/core/tasks/service'
 import type { PushChannel, PushEvents } from '../src/shared/ipc'
@@ -105,6 +109,7 @@ function start(): void {
   }
   const settingsStore = sqliteSettingsStore(db)
   const tasks = new TaskService(new SqliteTaskRepo(db), systemClock, randomUUID)
+  const batches = sqliteBatchStore(db)
 
   const reminders = startReminderService({
     log: new SqliteReminderLog(db),
@@ -198,6 +203,40 @@ function start(): void {
     'google:setCalendar': (id, selected) => google.setCalendar(id, selected),
     'google:setTasksSync': (enabled) => google.setTasksSync(enabled),
     'google:setPhoneReminders': (enabled) => google.setPhoneReminders(enabled),
+    'google:allowBlocks': () => google.allowBlocks(),
+    'plan:apply': async (request) => {
+      const now = systemClock.now()
+      const zone = systemClock.zone()
+      const result = await applyPlan(request, {
+        tasks,
+        batches,
+        writer: request.calendarId ? google.blockWriter : undefined,
+        day: {
+          date: request.date,
+          zone,
+          window: planWindow(request.window),
+          busy: busyFromEvents(google.events(request.date, request.date)),
+          notBefore: request.date === toLocalDate(now, zone) ? now.toISOString() : null,
+        },
+        newId: randomUUID,
+        now: now.toISOString(),
+      })
+      push('data:changed', { scope: 'tasks' })
+      push('data:changed', { scope: 'plan' })
+      reminders.engine.tick()
+      google.scheduleTasksSync()
+      return result
+    },
+    'plan:undo': async (batchId) => {
+      await undoPlan(batchId, { tasks, batches, writer: google.blockWriter })
+      push('data:changed', { scope: 'tasks' })
+      push('data:changed', { scope: 'plan' })
+      google.scheduleTasksSync()
+    },
+    'plan:latest': () => {
+      const b = batches.latest()
+      return b ? summarize(b) : null
+    },
     'google:syncNow': async () => {
       await google.sync()
       return google.status()
@@ -245,6 +284,12 @@ function start(): void {
   app.on('activate', () => showMainWindow())
 }
 
+/** The user's planning window if it's well-formed, otherwise the default. */
+function planWindow(w: { start: string; end: string } | undefined): { start: string; end: string } {
+  const ok = (t: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(t)
+  return w && ok(w.start) && ok(w.end) && w.start < w.end ? w : DEFAULT_PLAN_WINDOW
+}
+
 /**
  * Registers (or removes) the app as a Windows login item. Only for the
  * installed app: in development it would register the bare electron.exe, and
@@ -287,6 +332,7 @@ function showMainWindow(): void {
     minWidth: 380,
     minHeight: 500,
     title: 'Miss Minutes',
+    backgroundColor: '#17100a', // the console's cabinet colour (styles.css), so resizing never flashes white
     icon: ICON,
     show: false,
     webPreferences: {

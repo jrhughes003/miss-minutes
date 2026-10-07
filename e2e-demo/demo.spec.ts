@@ -83,3 +83,74 @@ test('the demo suggests steps for a task, labelled as simulated', async ({ page 
   await editor.getByRole('button', { name: 'Add selected steps' }).click()
   await expect(page.getByText('0/4 steps')).toBeVisible()
 })
+
+test('plans tomorrow around the calendar, creates timed tasks, and undoes it', async ({ page }) => {
+  const errors: string[] = []
+  page.on('pageerror', (e) => errors.push(e.message))
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Plan', exact: true }).click()
+  await page.getByLabel(/One per line/).fill('Write the board update 1h p1\nCall the bank 15m')
+  await page.getByRole('button', { name: 'Lay it out on the day' }).click()
+
+  const blocks = page.getByRole('list', { name: 'Planned tasks' }).getByRole('listitem')
+  await expect(blocks).toHaveCount(2)
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await expectAccessible(page)
+
+  // Send one back to the tray and drag it onto the timeline by hand.
+  await blocks.filter({ hasText: 'Call the bank' }).focus()
+  await page.keyboard.press('Delete')
+  const tray = page.getByRole('complementary', { name: 'Not placed yet' })
+  const item = tray.locator('.tray-item', { hasText: 'Call the bank' })
+  const grid = page.getByRole('group', { name: 'Day timeline' })
+  await page.setViewportSize({ width: 1280, height: 1400 }) // room to see the tray and the evening at once
+  await grid.evaluate((el) => el.parentElement!.scrollTo(0, el.parentElement!.scrollHeight)) // scroll to the evening
+  await item.hover({ position: { x: 10, y: 10 } })
+  await page.mouse.down()
+  // 21:30 is 14.5 hours into the 07:00 day, at 1.1 px a minute: just after the demo dinner.
+  const box = (await grid.boundingBox())!
+  await page.mouse.move(box.x + box.width - 40, box.y + 14.5 * 60 * 1.1 + 4, { steps: 5 })
+  await page.mouse.up()
+  await expect(tray.getByText('Everything has a time.')).toBeVisible()
+  await expect(blocks.filter({ hasText: 'Call the bank' })).toHaveAttribute('aria-label', /^Call the bank, 9:30\W+p/i)
+
+  await page.getByRole('button', { name: /Review and confirm \(2\)/ }).click()
+  await expect(page.getByRole('checkbox', { name: /Remind me 5 minutes before each/ })).toBeChecked()
+  await expectAccessible(page)
+  await page.getByRole('button', { name: 'Create the plan' }).click()
+  await expect(page.getByRole('status').filter({ hasText: /2 new tasks/ })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Tasks', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Write the board update' })).toBeVisible()
+  await page.getByRole('button', { name: 'Plan', exact: true }).click()
+  await page.getByRole('button', { name: 'Undo' }).click()
+  await expect(page.getByRole('button', { name: 'Undo' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Tasks', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Write the board update' })).toHaveCount(0)
+  expect(errors).toEqual([])
+})
+
+test('the light "office" theme is accessible on every page and is remembered', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark') // "terminal" is the default
+  await page.getByRole('button', { name: 'Theme: Terminal' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await expect(page.getByRole('region', { name: 'Schedule' })).toBeVisible()
+  await expectAccessible(page)
+
+  await page.getByRole('button', { name: 'Tasks', exact: true }).click()
+  await page.getByRole('button', { name: 'Plan the cottage weekend' }).click()
+  await expectAccessible(page)
+
+  await page.getByRole('button', { name: 'Plan', exact: true }).click()
+  await page.getByLabel(/One per line/).fill('Write the board update 1h p1')
+  await page.getByRole('button', { name: 'Lay it out on the day' }).click()
+  await expectAccessible(page)
+
+  await page.getByRole('button', { name: 'Settings', exact: true }).click()
+  await expectAccessible(page)
+
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await expect(page.getByRole('button', { name: 'Theme: Office' })).toBeVisible()
+})

@@ -16,6 +16,7 @@ import type { NewTask, Project, Task, TaskPatch, TaskQuery } from '../core/tasks
 import type { CalendarEvent } from '../core/today'
 import type { AiPrefs, AiStatus, BreakdownResponse, CaptureResponse } from './ai'
 import type { GoogleStatus } from './google'
+import type { PlanApplyRequest, PlanApplyResult, PlanBatchSummary } from '../core/plan/apply'
 
 export interface AppInfo {
   name: string
@@ -63,6 +64,12 @@ export interface IpcContract {
   'google:syncNow': { args: []; result: GoogleStatus }
   'google:setTasksSync': { args: [enabled: boolean]; result: GoogleStatus }
   'google:setPhoneReminders': { args: [enabled: boolean]; result: GoogleStatus }
+  'google:allowBlocks': { args: []; result: GoogleStatus }
+
+  /** Confirms a day plan: creates/updates tasks and, optionally, writes calendar blocks. */
+  'plan:apply': { args: [request: PlanApplyRequest]; result: PlanApplyResult }
+  'plan:undo': { args: [batchId: string]; result: void }
+  'plan:latest': { args: []; result: PlanBatchSummary | null }
 
   'ai:status': { args: []; result: AiStatus }
   /** Stored encrypted; never returned to the renderer. */
@@ -109,6 +116,10 @@ const CHANNEL_SET: Record<Channel, true> = {
   'google:syncNow': true,
   'google:setTasksSync': true,
   'google:setPhoneReminders': true,
+  'google:allowBlocks': true,
+  'plan:apply': true,
+  'plan:undo': true,
+  'plan:latest': true,
   'ai:status': true,
   'ai:setKey': true,
   'ai:clearKey': true,
@@ -126,7 +137,7 @@ export function isChannel(value: unknown): value is Channel {
 /** Events pushed from main to renderer (not request/response). */
 export interface PushEvents {
   /** Something changed in the database; the renderer should refetch. */
-  'data:changed': { scope: 'tasks' | 'reminders' | 'projects' | 'settings' | 'calendar' | 'ai' }
+  'data:changed': { scope: 'tasks' | 'reminders' | 'projects' | 'settings' | 'calendar' | 'ai' | 'plan' }
   /** The user clicked a reminder notification: show that reminder. */
   'reminder:open': { ruleId: string; occurrenceLocal: string; taskId: string }
 }

@@ -212,6 +212,20 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    version: 7,
+    description: 'applied day plans (for undo)',
+    sql: `
+      -- One row per confirmed day plan: what it created, what it changed (with
+      -- the old values) and which calendar blocks it wrote, so Undo can reverse
+      -- exactly that plan.
+      CREATE TABLE plan_batches (
+        id    TEXT PRIMARY KEY,
+        at    TEXT NOT NULL,
+        data  TEXT NOT NULL
+      );
+    `,
+  },
 ]
 
 export function currentVersion(db: SqlDatabase): number {

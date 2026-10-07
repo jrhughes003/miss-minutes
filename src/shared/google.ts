@@ -22,6 +22,14 @@ export interface GoogleStatus {
   calendars: CalendarSummary[]
   tasks: TasksSyncStatus
   phone: PhoneRemindersStatus
+  blocks: CalendarBlocksStatus
+}
+
+export interface CalendarBlocksStatus {
+  /** The grant includes calendar.events.owned. */
+  scopeGranted: boolean
+  /** Calendars the user owns, where plan blocks can go (primary first). */
+  calendars: { id: string; summary: string; primary: boolean }[]
 }
 
 export interface PhoneRemindersStatus {
@@ -59,4 +67,5 @@ export const UNAVAILABLE_GOOGLE: GoogleStatus = {
   calendars: [],
   tasks: { enabled: false, scopeGranted: false, lastSync: null, log: [] },
   phone: { enabled: false, scopeGranted: false, active: false },
+  blocks: { scopeGranted: false, calendars: [] },
 }

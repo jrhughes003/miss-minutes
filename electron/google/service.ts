@@ -12,7 +12,10 @@ import { GoogleApi } from './api'
 import { GoogleAuth } from './auth'
 import type { CalendarStore } from './calendarStore'
 import { syncCalendars } from './calendarSync'
-import { APP_CALENDAR_SCOPE, CALENDAR_READ_SCOPES, NeedsReconnectError, TASKS_SCOPE, type GoogleEndpoints } from './oauth'
+import { createHash } from 'node:crypto'
+import type { BlockRef, BlockWriter } from '../../src/core/plan/apply'
+import { GoogleApiError } from './api'
+import { APP_CALENDAR_SCOPE, CALENDAR_READ_SCOPES, CALENDAR_WRITE_SCOPE, NeedsReconnectError, TASKS_SCOPE, type GoogleEndpoints } from './oauth'
 import { PhoneMirror } from './phoneMirror'
 import { syncTasks } from './tasksSync'
 import type { TasksSyncStore } from './tasksSyncStore'
@@ -72,12 +75,60 @@ export class GoogleService {
         lastSync: this.o.settings.get('google.tasksLastSync'),
         log: this.o.tasksStore.recentLog(15),
       },
+      blocks: {
+        scopeGranted: auth.scopes.includes(CALENDAR_WRITE_SCOPE),
+        calendars: auth.connected
+          ? this.o.store
+              .calendars()
+              .filter((c) => c.accessRole === 'owner' && c.id !== this.phone.calendarId())
+              .map((c) => ({ id: c.id, summary: c.summary, primary: c.primary }))
+          : [],
+      },
       phone: {
         enabled: this.phoneEnabled(),
         scopeGranted: auth.scopes.includes(APP_CALENDAR_SCOPE),
         active: auth.connected && this.phoneEnabled() && auth.scopes.includes(APP_CALENDAR_SCOPE),
       },
     }
+  }
+
+  /** Asks Google for permission to write plan blocks to your own calendars (one consent). */
+  async allowBlocks(): Promise<GoogleStatus> {
+    this.o.settings.set('google.planBlocks', 'true')
+    return this.connect()
+  }
+
+  /** Writes and removes plan blocks (core/plan/apply.ts). Ids derive from the batch and item, so a retry never duplicates. */
+  readonly blockWriter: BlockWriter = {
+    refFor: (calendarId, batchId, key): BlockRef => ({ calendarId, eventId: `mmplan${createHash('sha256').update(`${batchId}|${key}`).digest('hex').slice(0, 40)}` }),
+    write: async (calendarId, batchId, blocks) => {
+      for (const b of blocks) {
+        const { eventId } = this.blockWriter.refFor(calendarId, batchId, b.key)
+        await this.api
+          .insertEvent(calendarId, {
+            id: eventId,
+            summary: b.title,
+            description: 'Planned in Miss Minutes.',
+            start: { dateTime: b.start, timeZone: this.o.clock.zone() },
+            end: { dateTime: b.end, timeZone: this.o.clock.zone() },
+            transparency: 'opaque',
+            reminders: { useDefault: false, overrides: [] },
+            extendedProperties: { private: { mmTask: b.taskId, mmBatch: batchId } },
+          })
+          .catch((e: unknown) => {
+            if (!(e instanceof GoogleApiError && e.status === 409)) throw e // 409: already written on an earlier try
+          })
+      }
+      void this.sync() // show the new blocks as busy straight away
+    },
+    remove: async (refs) => {
+      for (const r of refs) {
+        await this.api.deleteEvent(r.calendarId, r.eventId).catch((e: unknown) => {
+          if (!(e instanceof GoogleApiError && (e.status === 404 || e.status === 410))) throw e
+        })
+      }
+      void this.sync()
+    },
   }
 
   private phoneEnabled(): boolean {
@@ -135,7 +186,12 @@ export class GoogleService {
 
   async connect(): Promise<GoogleStatus> {
     // Ask only for what's in use: Tasks access only once Tasks sync is on (D10).
-    await this.auth.connect([...CALENDAR_READ_SCOPES, ...(this.tasksEnabled() ? [TASKS_SCOPE] : []), ...(this.phoneEnabled() ? [APP_CALENDAR_SCOPE] : [])])
+    await this.auth.connect([
+      ...CALENDAR_READ_SCOPES,
+      ...(this.tasksEnabled() ? [TASKS_SCOPE] : []),
+      ...(this.phoneEnabled() ? [APP_CALENDAR_SCOPE] : []),
+      ...(this.o.settings.get('google.planBlocks') === 'true' ? [CALENDAR_WRITE_SCOPE] : []),
+    ])
     this.needsReconnect = false
     this.lastError = null
     this.o.onChange()

@@ -50,6 +50,9 @@ export const TASKS_SCOPE = 'https://www.googleapis.com/auth/tasks'
  */
 export const APP_CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.app.created'
 
+/** Plan my day: write time blocks to calendars the user owns (M10, D12). Requested on first use. */
+export const CALENDAR_WRITE_SCOPE = 'https://www.googleapis.com/auth/calendar.events.owned'
+
 export interface OAuthClient {
   clientId: string
   clientSecret: string

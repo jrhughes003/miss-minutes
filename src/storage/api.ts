@@ -17,6 +17,8 @@ import { toLocalDate } from '../core/time'
 import { parseBaseline } from '../core/capture/baseline'
 import { toLocalDateTime } from '../core/time'
 import { mockBreakdown } from '../core/breakdown/mock'
+import { applyPlan, busyFromEvents, summarize, undoPlan, type BatchStore, type PlanApplyRequest, type PlanApplyResult, type PlanBatch, type PlanBatchSummary } from '../core/plan/apply'
+import { DEFAULT_PLAN_WINDOW } from '../core/plan/types'
 import { UNAVAILABLE_AI, type AiPrefs, type AiStatus, type BreakdownResponse, type CaptureResponse } from '../shared/ai'
 import { UNAVAILABLE_GOOGLE, type GoogleStatus } from '../shared/google'
 import { decodeIpcError, type MissMinutesApi, type PushEvents } from '../shared/ipc'
@@ -68,6 +70,12 @@ export interface DataApi {
     syncNow(): Promise<GoogleStatus>
     setTasksSync(enabled: boolean): Promise<GoogleStatus>
     setPhoneReminders(enabled: boolean): Promise<GoogleStatus>
+    allowBlocks(): Promise<GoogleStatus>
+  }
+  plan: {
+    apply(request: PlanApplyRequest): Promise<PlanApplyResult>
+    undo(batchId: string): Promise<void>
+    latest(): Promise<PlanBatchSummary | null>
   }
   ai: {
     status(): Promise<AiStatus>
@@ -164,6 +172,12 @@ export function createIpcApi(b: MissMinutesApi): DataApi {
       syncNow: () => call(b.invoke('google:syncNow')),
       setTasksSync: (enabled) => call(b.invoke('google:setTasksSync', enabled)),
       setPhoneReminders: (enabled) => call(b.invoke('google:setPhoneReminders', enabled)),
+      allowBlocks: () => call(b.invoke('google:allowBlocks')),
+    },
+    plan: {
+      apply: (request) => call(b.invoke('plan:apply', request)),
+      undo: (batchId) => call(b.invoke('plan:undo', batchId)),
+      latest: () => call(b.invoke('plan:latest')),
     },
     isDemo: false,
     onChange: (listener) => b.on('data:changed', (e) => listener(e.scope)),
@@ -203,6 +217,7 @@ export function createLocalApi(storage: KeyValueStorage, options: LocalApiOption
   }
   const listeners = new Set<(scope: ChangeScope) => void>()
   const emit = (scope: ChangeScope) => listeners.forEach((l) => l(scope))
+  const localBatches = localBatchStore(storage)
   const engine = new ReminderEngine({
     log: new LocalReminderLog(storage),
     tasks: service,
@@ -314,6 +329,38 @@ export function createLocalApi(storage: KeyValueStorage, options: LocalApiOption
       syncNow: () => Promise.resolve(UNAVAILABLE_GOOGLE),
       setTasksSync: () => Promise.resolve(UNAVAILABLE_GOOGLE),
       setPhoneReminders: () => Promise.resolve(UNAVAILABLE_GOOGLE),
+      allowBlocks: () => Promise.reject(new AppError('Calendar blocks need Google Calendar in the desktop app.')),
+    },
+    plan: {
+      apply: async (request) => {
+        const now = clock.now()
+        const zone = clock.zone()
+        const events = options.demo ? fakeEventsBetween(toLocalDate(now, zone), zone, request.date, request.date) : []
+        try {
+          const r = await applyPlan(request, {
+            tasks: service,
+            batches: localBatches,
+            day: { date: request.date, zone, window: request.window && request.window.start < request.window.end ? request.window : DEFAULT_PLAN_WINDOW, busy: busyFromEvents(events), notBefore: request.date === toLocalDate(now, zone) ? now.toISOString() : null },
+            newId: options.newId ?? (() => crypto.randomUUID()),
+            now: now.toISOString(),
+          })
+          emit('tasks')
+          emit('plan')
+          tickReminders()
+          return r
+        } catch (e) {
+          throw toAppError(e)
+        }
+      },
+      undo: async (batchId) => {
+        await undoPlan(batchId, { tasks: service, batches: localBatches })
+        emit('tasks')
+        emit('plan')
+      },
+      latest: () => read(() => {
+        const b = localBatches.latest()
+        return b ? summarize(b) : null
+      }),
     },
     isDemo: Boolean(options.demo),
     onChange(listener) {
@@ -345,6 +392,29 @@ function defaultApi(): DataApi {
     void seedDemo(local, toLocalDate(new Date(), systemClock.zone())).catch((e: unknown) => console.error('Miss Minutes: demo seeding failed', e))
   }
   return local
+}
+
+// --- Day-plan batches in the browser (for Undo) -------------------------------
+
+const BATCHES_KEY = 'miss-minutes:plan-batches:v1'
+
+function localBatchStore(storage: KeyValueStorage): BatchStore {
+  const all = (): PlanBatch[] => {
+    try {
+      return JSON.parse(storage.getItem(BATCHES_KEY) ?? '[]') as PlanBatch[]
+    } catch {
+      return []
+    }
+  }
+  return {
+    save: (b) => {
+      // Only the last few plans are kept; Undo is offered for the latest.
+      const rest = all().filter((x) => x.id !== b.id)
+      storage.setItem(BATCHES_KEY, JSON.stringify([...rest, b].slice(-10)))
+    },
+    get: (id) => all().find((b) => b.id === id) ?? null,
+    latest: () => all().at(-1) ?? null,
+  }
 }
 
 // --- Demo AI: simulated, and labelled as such everywhere it shows ------------

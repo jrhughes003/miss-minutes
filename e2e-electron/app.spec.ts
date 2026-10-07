@@ -48,6 +48,15 @@ test('desktop app starts with a locked-down bridge', async () => {
 
     const nodeVisible = await page.evaluate(() => typeof (globalThis as { require?: unknown }).require !== 'undefined' || typeof (globalThis as { process?: unknown }).process !== 'undefined')
     expect(nodeVisible).toBe(false)
+
+    // The bundled fonts load under the app's Content Security Policy (font-src 'self').
+    const fonts = await page.evaluate(async () => {
+      type FontFaces = Iterable<{ family: string; status: string }> & { load(font: string): Promise<unknown> }
+      const set = (globalThis as unknown as { document: { fonts: FontFaces } }).document.fonts
+      await Promise.all([set.load('20px VT323'), set.load('14px "IBM Plex Mono"')])
+      return [...set].filter((f) => f.status === 'loaded').map((f) => f.family.replace(/"/g, ''))
+    })
+    expect(fonts).toEqual(expect.arrayContaining(['VT323', 'IBM Plex Mono']))
   } finally {
     await app.close()
   }
