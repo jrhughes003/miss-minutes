@@ -310,8 +310,6 @@ together.
     before any block is written, so Undo can reverse even a half-finished
     apply. A block synced back from Google is hidden on Today when its task
     is already there.
-
-    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
 23. **Add the Plan page and the retro-futurist console look**
     ```powershell
@@ -342,8 +340,6 @@ together.
 
     The Plan flow is tested end to end on the desktop against the fake
     Google server, and in the demo with axe.
-
-    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
 24. **Document plan my day and the new look**
     ```powershell
@@ -356,8 +352,6 @@ together.
     README gains the Plan my day steps, the calendar-blocks scope and the
     theme switch; DECISIONS gains D39 (plan my day) and D40 (the visual
     identity), both as built and provisional.
-
-    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
     ```
 
 ## Milestones
